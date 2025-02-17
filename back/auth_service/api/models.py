@@ -31,10 +31,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Core Fields
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True, max_length=255)
-    password_hash = models.CharField(max_length=255)
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    username = models.CharField(max_length=50, unique=True, blank=True, null=True)
 
     # Phone Information
     phone_country_code = models.CharField(max_length=5, default="+33")
@@ -73,7 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # Authentication with Email
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["first_name", "last_name"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "phone_number", "phone_country_code"]
 
     def __str__(self):
         return f"{self.email} ({self.subscription_plan})"

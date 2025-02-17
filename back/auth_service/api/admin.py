@@ -1,3 +1,4 @@
+# filepath: /Users/ibrahimadlani/Documents/Programming/web-platform/back/auth_service/api/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User
@@ -8,7 +9,6 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "first_name",
         "last_name",
-        "username",
         "phone_country_code",
         "phone_number",
         "date_of_birth",
@@ -26,13 +26,13 @@ class UserAdmin(BaseUserAdmin):
         "last_login",
         "date_joined",
     )
-    search_fields = ("email", "first_name", "last_name", "username")
+    search_fields = ("email", "first_name", "last_name")
     readonly_fields = ("last_login", "date_joined")
     ordering = ("email",)
 
     fieldsets = (
-        (None, {"fields": ("email", "password_hash")}),
-        ("Personal Info", {"fields": ("first_name", "last_name", "username", "phone_country_code", "phone_number", "date_of_birth", "gender", "profile_picture_url", "cover_photo_url", "bio", "country", "timezone")}),
+        (None, {"fields": ("email", "password")}),
+        ("Personal Info", {"fields": ("first_name", "last_name", "phone_country_code", "phone_number", "date_of_birth", "gender", "profile_picture_url", "cover_photo_url", "bio", "country", "timezone")}),
         ("Permissions", {"fields": ("is_verified", "is_active", "is_banned", "is_staff", "is_superuser")}),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
         ("Subscription", {"fields": ("subscription_plan",)}),

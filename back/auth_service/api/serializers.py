@@ -18,10 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "email",
-            "password_hash",
             "first_name",
             "last_name",
-            "username",
             "phone_country_code",
             "phone_number",
             "date_of_birth",
@@ -39,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_login",
             "date_joined",
         ]
-        extra_kwargs = {"password_hash": {"write_only": True, "required": False}}
+        extra_kwargs = {"password": {"write_only": True, "required": False}}
 
     def create(self, validated_data):
         """Create and return a new user."""
