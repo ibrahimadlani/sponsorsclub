@@ -156,3 +156,11 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "api.User"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtppro.zoho.eu"  # Zoho SMTP server
+EMAIL_PORT = 465  # Secure SMTP port
+EMAIL_USE_SSL = True  # SSL must be enabled for Zoho
+EMAIL_HOST_USER = "ibrahim@adlani.com"  # Your Zoho email address
+EMAIL_HOST_PASSWORD = "Camhuxlacdaknoozkun4%"  # Your Zoho app password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
