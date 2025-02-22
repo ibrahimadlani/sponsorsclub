@@ -48,9 +48,9 @@ export function LoginForm({ className, ...props }) {
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Acceder à votre compte</CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            Se connecter avec Apple ou Google
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -68,7 +68,7 @@ export function LoginForm({ className, ...props }) {
                       fill="currentColor"
                     />
                   </svg>
-                  Login with Apple
+                  Se connecter avec Apple
                 </Button>
                 <Button variant="outline" className="w-full">
                   <svg
@@ -81,13 +81,13 @@ export function LoginForm({ className, ...props }) {
                       fill="currentColor"
                     />
                   </svg>
-                  Login with Google
+                  Se connecter avec Google
                 </Button>
               </div>
 
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                  Or continue with
+                  Ou se connecter ici
                 </span>
               </div>
 
@@ -101,9 +101,9 @@ export function LoginForm({ className, ...props }) {
               {/* Password Input */}
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-                    Forgot your password?
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <a href="/reset-password" className="ml-auto text-sm underline-offset-4 hover:underline">
+                    Mot de passe oublié?
                   </a>
                 </div>
                 <Input id="password" type="password" {...register("password")} />
@@ -120,15 +120,14 @@ export function LoginForm({ className, ...props }) {
       </Card>
 
       <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
+        Pas d'identifiants?{" "}
         <a href="/register" className="underline underline-offset-4">
-          Sign up
+          S'inscrire ici
         </a>
       </div>
 
-      <div className="text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+      <div className="text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 ">
+        En vous connectant, vous confirmez avoir lu et accepté nos <a href="/terms-of-service" className="hover:text-primary">Conditions Générales d’Utilisation</a> ainsi que notre <a href="/privacy-policy" className="hover:text-primary">Politique de Confidentialité</a>.
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link"; // Pour la navigation dans Next.js
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { Search, Menu, AlignJustify } from "lucide-react"; // Importing icons
+import { Search, Menu, AlignJustify, Globe } from "lucide-react"; // Importing icons
 import { AppSidebar } from "@/components/app-sidebar";
 import {
     SidebarInset,
@@ -25,12 +25,12 @@ import Logo from "@/components/logo";
 import BarChart from "@/components/bar-chart";
 import FollowerGrowthChart from "@/components/bar-chart";
 import { NavUser } from "@/components/nav-user";
-import { NavigationMenuDemo } from "@/components/nav-bar";
+import { NavMenu } from "@/components/nav-bar";
 
 const data = {
     user: {
-      name: "shadcn",
-      email: "m@example.com",
+      name: "Ibrahim Adlani",
+      email: "ibrahim@adlani.com",
       avatar: "/images/ski-1.jpg",
     }
 };
@@ -258,7 +258,7 @@ const ItemComponent = ({ item }) => {
         >
             {/* Badge Certification */}
             {item.certified && (
-                <span className="absolute top-2 right-2 flex items-center gap-1 bg-black text-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
+                <span className="absolute top-2 right-2 flex items-center gap-1 bg-pink-700 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
                     <BadgeCheck className="w-4 h-4 text-white" />
                     Pro
                 </span>
@@ -318,20 +318,26 @@ export default function Page() {
                 {/* HEADER */}
 
 
-                <header className="relative flex items-center justify-center border-b px-6 md:px-12 2xl:px-24 py-4 font-airbnb-cereal">
+                <header className="relative flex items-center justify-center border-b px-6 md:px-12 2xl:px-24 py-4 ">
                     {/* 🔹 Logo (absolute left) */}
                     <div className="absolute left-6 md:left-12 2xl:left-24">
                         <Logo />
                     </div>
 
                     {/* 🔹 Search Bar (centered) */}
-                    <div className="relative w-full max-w-md flex items-center">
-                        <NavigationMenuDemo />
+                    <div className="relative max-w-md flex items-center">
+                        <NavMenu />
                     </div>
                     
 
                     {/* 🔹 Sidebar Toggle Button (absolute right) */}
-                    <div className="absolute right-6 md:right-12 2xl:right-24 border flex gap-4 items-center rounded-xl">
+                    <div className="absolute right-6 md:right-12 2xl:right-24 flex gap-1 items-center">
+                        <Link href="/search" className="p-3 hover:bg-muted/50 rounded-full text-sm font-semibold" >
+                            <p className="text-nowrap">Passez <span className="text-pink-500">Premium</span></p>
+                            </Link>
+                        <Link href="/search" className="p-3 hover:bg-muted/50 rounded-full" >
+                            <Globe className="w-4 h-4"  />
+                        </Link>
                         <NavUser user={data.user} />
                     </div>
                 </header>

@@ -15,6 +15,7 @@ import {
     Handshake,
     LifeBuoy,
     Settings,
+    ChevronsUpDown,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation"; // Import Next.js router for redirection
@@ -66,11 +67,14 @@ export function NavUser({ user }) {
                             size="lg"
                             className="relative data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
-                            <ChevronDown className="mx-2 size-4" />
                             <Avatar className="h-8 w-8 rounded-lg">
                                 <AvatarImage src={user.avatar} alt={user.name} />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                <AvatarFallback className="rounded-lg"> {user.firstName ? user.firstName.slice(0, 2).toUpperCase() : ""}</AvatarFallback>
                             </Avatar>
+                            <div className="grid flex-1 text-left text-sm leading-tight">
+                                <span className="truncate font-semibold">{user.name}</span>
+                                <span className="truncate text-xs">{user.email}</span>
+                            </div>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -95,7 +99,7 @@ export function NavUser({ user }) {
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <Sparkles className="mr-2 h-4 w-4" />
-                                <span>Upgrade to <span className="font-bold text-pink-500 -2">Pro</span></span>
+                                <span>Passez <span className="font-bold text-pink-500 -2">Premium</span></span>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
@@ -121,7 +125,7 @@ export function NavUser({ user }) {
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                             <BadgeCheck className="mr-2 h-4 w-4" />
-                            Account
+                            Compte
                         </DropdownMenuItem>
                         {/* Dark/Light mode toggle */}
                         <DropdownMenuItem onClick={toggleTheme}>

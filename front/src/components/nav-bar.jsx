@@ -14,6 +14,7 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { Map, Shield, User, Users } from "lucide-react"
 
 const components = [
     {
@@ -53,13 +54,14 @@ const components = [
     },
 ]
 
-export function NavigationMenuDemo() {
+export function NavMenu() {
     return (
         <NavigationMenu>
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <Link href="/docs" legacyBehavior passHref>
                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <User className="h-4 w-4 me-2" />
                             Athlètes
                         </NavigationMenuLink>
                     </Link>
@@ -67,12 +69,15 @@ export function NavigationMenuDemo() {
                 <NavigationMenuItem>
                     <Link href="/docs" legacyBehavior passHref>
                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <Shield className="h-4 w-4 me-2" />
                             Équipes
                         </NavigationMenuLink>
                     </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger>Cartes</NavigationMenuTrigger>
+                    <NavigationMenuTrigger>
+                        <Map className="h-4 w-4 me-2" />
+                        Cartes</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                             <li className="row-span-3">
@@ -83,7 +88,8 @@ export function NavigationMenuDemo() {
                                     >
                                         {/* <Icons.logo className="h-6 w-6" /> */}
                                         <div className="mb-2 mt-4 text-lg font-medium">
-                                            shadcn/ui
+                                            Cartes<br/>
+                                            SponsorsClub
                                         </div>
                                         <p className="text-sm leading-tight text-muted-foreground">
                                             Beautifully designed components built with Radix UI and

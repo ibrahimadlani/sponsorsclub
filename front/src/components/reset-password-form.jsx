@@ -48,9 +48,9 @@ export function ResetPasswordForm({ className, ...props }) {
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Reset Password</CardTitle>
+          <CardTitle className="text-xl">Reinitialiser votre mot de passe</CardTitle>
           <CardDescription>
-            Enter your email to receive a password reset link.
+            Entrez votre adresse email pour recevoir un lien de réinitialisation
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,7 +62,7 @@ export function ResetPasswordForm({ className, ...props }) {
                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Sending..." : "Send Reset Link"}
+                {loading ? "Envoie..." : "Envoyer le lien"}
               </Button>
             </div>
           </form>
@@ -72,9 +72,9 @@ export function ResetPasswordForm({ className, ...props }) {
         </CardContent>
       </Card>
       <div className="text-center text-sm">
-        Remember your password?{" "}
+        Vous connaissez votre mot de passe?{" "}
         <a href="/login" className="underline underline-offset-4">
-          Login
+          Se connecter ici
         </a>
       </div>
     </div>
