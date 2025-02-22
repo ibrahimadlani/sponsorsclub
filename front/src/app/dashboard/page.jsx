@@ -1,13 +1,8 @@
+"use client";
+import Link from "next/link"; // Pour la navigation dans Next.js
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { Search, Menu, AlignJustify } from "lucide-react"; // Importing icons
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
 import {
     SidebarInset,
     SidebarProvider,
@@ -21,34 +16,289 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-import { Card, CardContent } from "@/components/ui/card";
-import  Logo  from "@/components/logo";
 
-// Reusable Item Component
-const ItemComponent = ({ isCarousel = true }) => {
-    if (isCarousel) {
-        return (
-            <div className="rounded-xl w-full group relative">
-                <Carousel className="w-full h-full border h-64 rounded-lg">
-                    <CarouselContent className="h-full">
-                        {Array.from({ length: 5 }).map((_, index) => (
-                            <CarouselItem key={index}>
-                                <CardContent className="flex items-center justify-center p-6 h-full w-full">
-                                    <span className="text-4xl font-semibold">{index + 1}</span>
-                                </CardContent>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </Carousel>
-                <h1 className="text-bold font-base text-lg">Ibrahim Adlani</h1>              
+import { BadgeCheck } from "lucide-react";
+import { CardContent } from "@/components/ui/card";
+import Logo from "@/components/logo";
+import BarChart from "@/components/bar-chart";
+import FollowerGrowthChart from "@/components/bar-chart";
+
+// 🔹 Données JSON avec l'URL du profil de chaque athlète
+const itemsData = [
+        {
+            "id": 1,
+            "name": "Jean Skieur",
+            "location": "Chamonix, France",
+            "category": "Ski Freestyle",
+            "price": "675 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/jean-skieur",
+            "certified": true,
+            "images": [
+                "/images/ski-1.jpg",
+                "/images/ski-2.jpg",
+                "/images/ski-3.jpg"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Sophie Martin",
+            "location": "Lyon, France",
+            "category": "Tennis",
+            "price": "850 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/sophie-martin",
+            "certified": true,
+            "images": [
+                "/images/nadal-1.jpg",
+                "/images/nadal-2.jpg"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Lucas Durand",
+            "location": "Marseille, France",
+            "category": "Basketball",
+            "price": "720 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/lucas-durand",
+            "certified": true,
+            "images": [
+                "/images/wemby-1.jpg",
+                "/images/wemby-2.jpg"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Emma Leclerc",
+            "location": "Nice, France",
+            "category": "Swimming",
+            "price": "900 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/emma-leclerc",
+            "certified": false,
+            "images": [
+                "/images/ski-1.jpg",
+                "/images/ski-2.jpg",
+                "/images/ski-3.jpg"
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Nathan Giraud",
+            "location": "Paris, France",
+            "category": "Football",
+            "price": "1050 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/nathan-giraud",
+            "certified": true,
+            "images": [
+                "/images/nadal-1.jpg",
+                "/images/nadal-2.jpg"
+            ]
+        },
+        {
+            "id": 6,
+            "name": "Chloé Lambert",
+            "location": "Bordeaux, France",
+            "category": "Cycling",
+            "price": "780 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/chloe-lambert",
+            "certified": true,
+            "images": [
+                "/images/wemby-1.jpg",
+                "/images/wemby-2.jpg"
+            ]
+        },
+        {
+            "id": 7,
+            "name": "Hugo Petit",
+            "location": "Toulouse, France",
+            "category": "Rugby",
+            "price": "970 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/hugo-petit",
+            "certified": true,
+            "images": [
+                "/images/ski-1.jpg",
+                "/images/ski-2.jpg"
+            ]
+        },
+        {
+            "id": 8,
+            "name": "Camille Roche",
+            "location": "Strasbourg, France",
+            "category": "Athletics",
+            "price": "600 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/camille-roche",
+            "certified": false,
+            "images": [
+                "/images/nadal-1.jpg",
+                "/images/nadal-2.jpg"
+            ]
+        },
+        {
+            "id": 9,
+            "name": "Maxime Dupont",
+            "location": "Grenoble, France",
+            "category": "Snowboarding",
+            "price": "820 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/maxime-dupont",
+            "certified": true,
+            "images": [
+                "/images/wemby-1.jpg",
+                "/images/wemby-2.jpg",
+            ]
+        },
+        {
+            "id": 10,
+            "name": "Léa Fontaine",
+            "location": "Rennes, France",
+            "category": "Gymnastics",
+            "price": "730 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/lea-fontaine",
+            "certified": false,
+            "images": [
+                "/images/ski-1.jpg",
+                "/images/ski-2.jpg"
+            ]
+        },
+        {
+            "id": 11,
+            "name": "Antoine Leroy",
+            "location": "Dijon, France",
+            "category": "Judo",
+            "price": "880 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/antoine-leroy",
+            "certified": true,
+            "images": [
+                "/images/judo-1.jpg",
+                "/images/judo-2.jpg"
+            ]
+        },
+        {
+            "id": 12,
+            "name": "Sophie Dufresne",
+            "location": "Montpellier, France",
+            "category": "Handball",
+            "price": "920 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/sophie-dufresne",
+            "certified": true,
+            "images": [
+                "/images/handball-1.jpg",
+                "/images/handball-2.jpg"
+            ]
+        },
+        {
+            "id": 13,
+            "name": "Julien Morel",
+            "location": "Marseille, France",
+            "category": "Diving",
+            "price": "845 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/julien-morel",
+            "certified": true,
+            "images": [
+                "/images/diving-1.jpg",
+                "/images/diving-2.jpg"
+            ]
+        },
+        {
+            "id": 14,
+            "name": "Élodie Richard",
+            "location": "Toulon, France",
+            "category": "Surfing",
+            "price": "700 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/elodie-richard",
+            "certified": false,
+            "images": [
+                "/images/surfing-1.jpg",
+                "/images/surfing-2.jpg"
+            ]
+        },
+        {
+            "id": 15,
+            "name": "Thomas Garnier",
+            "location": "Lille, France",
+            "category": "Fencing",
+            "price": "980 €",
+            "isCarousel": true,
+            "profileUrl": "/athletes/thomas-garnier",
+            "certified": false,
+            "images": [
+                "/images/athletics-1.jpg",
+                "/images/athletics-2.jpg"
+            ]
+        }
+    
+];
+
+const ItemComponent = ({ item }) => {
+    return (
+        <div
+            className="rounded-xl w-full group relative block transition-transform transform hover:scale-[1.02] z-0"
+        >
+            {/* Badge Certification */}
+            {item.certified && (
+                <span className="absolute top-2 right-2 flex items-center gap-1 bg-black text-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
+                    <BadgeCheck className="w-4 h-4 text-white" />
+                    Pro
+                </span>
+            )}
+
+            {item.isCarousel ? (
+                <div className="relative w-full h-64 rounded-xl overflow-hidden">
+                    <Carousel className="w-full h-full z-0">
+                        <Link
+                            href={item.profileUrl}
+                        >
+                            <CarouselContent className="h-full z-20">
+                                {item.images.map((image, index) => (
+                                    <CarouselItem key={index} className="flex items-center justify-center h-full w-full bg-muted/50">
+                                        <img
+                                            src={image}
+                                            alt={`Slide ${index + 1}`}
+                                            className="w-full h-full object-cover object-center mx-auto"
+                                        />
+                                    </CarouselItem>
+                                ))}
+                                {/* 🔹 Slide du graphique */}
+                                <CarouselItem className="flex items-center justify-center h-full w-full">
+                                    <FollowerGrowthChart className="h-full" />
+                                </CarouselItem>
+                            </CarouselContent>
+                        </Link>
+
+                        {/* 🔹 Boutons de navigation avec z-index élevé */}
+                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30" />
+                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30" />
+                    </Carousel>
+                </div>
+            ) : (
+                <div className="aspect-video rounded-xl bg-muted/50" />
+            )}
+
+            {/* Infos utilisateur */}
+            <div className="flex flex-col mt-3">
+                <h1 className="font-semibold text-base leading-5">{item.name}</h1>
+                <p className="font-light text-base dark:text-white/50 text-black/50 leading-5">
+                    {item.location} <span className="font-bold">·</span> {item.category}
+                </p>
+                <p className="font-normal text-base leading-5 mt-1">
+                    À partir de <span className="font-semibold">{item.price}</span>
+                </p>
             </div>
-        );
-    }
-
-    return <div className="aspect-video rounded-xl bg-muted/50" />;
+        </div>
+    );
 };
 
 export default function Page() {
@@ -56,17 +306,44 @@ export default function Page() {
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
-                <header className="flex h-48 shrink-0 items-center gap-2 border-b">
-                    <div className="flex items-center gap-2 px-3">
+                {/* HEADER */}
+
+
+                <header className="relative flex items-center justify-center border-b px-6 md:px-12 2xl:px-24 py-4 border-b">
+                    {/* 🔹 Logo (absolute left) */}
+                    <div className="absolute left-6 md:left-12 2xl:left-24">
                         <Logo />
-                        <SidebarTrigger />
-                        <Separator orientation="vertical" className="mr-2 h-4" />
+                    </div>
+
+                    {/* 🔹 Search Bar (centered) */}
+                    <div className="relative w-full max-w-md flex items-center  bg-muted/50 rounded-xl">
+                        <input
+                            type="text"
+                            placeholder="Search athletes..."
+                            className="w-full outline-none font-semi bold ps-4 bg-transparent text-sm"
+                        />
+                        {/* 🔹 Circular Search Button */}
+                        <button className="m-1.5 bg-black text-white dark:bg-white dark:text-black p-2.5 rounded-xl hover:bg-gray-700 transition">
+                            <Search className="w-3 h-3" strokeWidth={4} />
+                        </button>
+                    </div>
+
+                    {/* 🔹 Sidebar Toggle Button (absolute right) */}
+                    <div className="absolute right-6 md:right-12 2xl:right-24 border flex gap-4 items-center rounded-full p-2 rounded-xl">
+                        <AlignJustify className="h-4 w-4 ms-2"/>
+                        <Avatar className="h-8 w-8 rounded-xl ">
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                        {/* <SidebarTrigger /> */}
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col gap-4 px-24 py-12">
-                    <div className="grid auto-rows-min gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-                        {Array.from({ length: 20 }).map((_, index) => (
-                            <ItemComponent key={index} />
+
+                {/* GRID DES ITEMS */}
+                <div className="flex flex-1 flex-col gap-4 px-6 md:px-12 2xl:px-24 py-3">
+                    <div className="grid auto-rows-min gap-x-6 gap-y-12 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
+                        {itemsData.map((item) => (
+                            <ItemComponent key={item.id} item={item} />
                         ))}
                     </div>
                 </div>
