@@ -18,12 +18,12 @@ export const AuthProvider = ({ children }) => {
             setAccessToken(storedToken);
 
             // 🚀 Bloquer l'accès aux pages d'auth si déjà connecté
-            if (["/login", "/register", "/forget-password"].includes(pathname)) {
+            if (["/login", "/register", "/reset-password", "/reset-password/confirm"].includes(pathname)) {
                 router.replace("/dashboard");
             }
         } else {
             // 🚀 Rediriger vers /login si l'utilisateur n'est pas connecté et essaie d'aller sur une page protégée
-            if (!["/login", "/register", "/forget-password"].includes(pathname)) {
+            if (!["/login", "/register", "/reset-password", "/reset-password/confirm"].includes(pathname)) {
                 router.replace("/login");
             }
         }

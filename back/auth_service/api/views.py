@@ -41,10 +41,11 @@ class ResetPasswordView(APIView):
             user.save()
 
             # Construct the reset link
-            reset_link = f"http://localhost:3000/reset-password?token={reset_token}"
+            reset_link = f"http://localhost:3000/reset-password/confirm?token={reset_token}"
 
             # Send email
             send_mail(
+
                 subject="SponsorsClub · Reset Your Password",
                 message=f"Click the link to reset your password: {reset_link}",
                 from_email=settings.DEFAULT_FROM_EMAIL,

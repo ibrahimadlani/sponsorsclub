@@ -1,5 +1,6 @@
-import { LoginForm } from "@/components/login-form";
+
 import Logo from "@/components/logo";
+import { RegisterForm } from "@/components/register-form";
 
 export default function LoginPage() {
   return (
@@ -9,7 +10,7 @@ export default function LoginPage() {
 
           <Logo />
         </a>
-        <LoginForm />
+        <RegisterForm />
       </div>
     </div>)
   );

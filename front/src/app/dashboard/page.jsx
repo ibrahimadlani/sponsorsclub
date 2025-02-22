@@ -24,7 +24,16 @@ import { CardContent } from "@/components/ui/card";
 import Logo from "@/components/logo";
 import BarChart from "@/components/bar-chart";
 import FollowerGrowthChart from "@/components/bar-chart";
+import { NavUser } from "@/components/nav-user";
+import { NavigationMenuDemo } from "@/components/nav-bar";
 
+const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/images/ski-1.jpg",
+    }
+};
 // 🔹 Données JSON avec l'URL du profil de chaque athlète
 const itemsData = [
         {
@@ -32,7 +41,7 @@ const itemsData = [
             "name": "Jean Skieur",
             "location": "Chamonix, France",
             "category": "Ski Freestyle",
-            "price": "675 €",
+            "price": "675",
             "isCarousel": true,
             "profileUrl": "/athletes/jean-skieur",
             "certified": true,
@@ -47,7 +56,7 @@ const itemsData = [
             "name": "Sophie Martin",
             "location": "Lyon, France",
             "category": "Tennis",
-            "price": "850 €",
+            "price": "850",
             "isCarousel": true,
             "profileUrl": "/athletes/sophie-martin",
             "certified": true,
@@ -61,7 +70,7 @@ const itemsData = [
             "name": "Lucas Durand",
             "location": "Marseille, France",
             "category": "Basketball",
-            "price": "720 €",
+            "price": "720",
             "isCarousel": true,
             "profileUrl": "/athletes/lucas-durand",
             "certified": true,
@@ -75,7 +84,7 @@ const itemsData = [
             "name": "Emma Leclerc",
             "location": "Nice, France",
             "category": "Swimming",
-            "price": "900 €",
+            "price": "900",
             "isCarousel": true,
             "profileUrl": "/athletes/emma-leclerc",
             "certified": false,
@@ -90,7 +99,7 @@ const itemsData = [
             "name": "Nathan Giraud",
             "location": "Paris, France",
             "category": "Football",
-            "price": "1050 €",
+            "price": "1050",
             "isCarousel": true,
             "profileUrl": "/athletes/nathan-giraud",
             "certified": true,
@@ -104,7 +113,7 @@ const itemsData = [
             "name": "Chloé Lambert",
             "location": "Bordeaux, France",
             "category": "Cycling",
-            "price": "780 €",
+            "price": "780",
             "isCarousel": true,
             "profileUrl": "/athletes/chloe-lambert",
             "certified": true,
@@ -118,7 +127,7 @@ const itemsData = [
             "name": "Hugo Petit",
             "location": "Toulouse, France",
             "category": "Rugby",
-            "price": "970 €",
+            "price": "970",
             "isCarousel": true,
             "profileUrl": "/athletes/hugo-petit",
             "certified": true,
@@ -132,7 +141,7 @@ const itemsData = [
             "name": "Camille Roche",
             "location": "Strasbourg, France",
             "category": "Athletics",
-            "price": "600 €",
+            "price": "600",
             "isCarousel": true,
             "profileUrl": "/athletes/camille-roche",
             "certified": false,
@@ -146,7 +155,7 @@ const itemsData = [
             "name": "Maxime Dupont",
             "location": "Grenoble, France",
             "category": "Snowboarding",
-            "price": "820 €",
+            "price": "820",
             "isCarousel": true,
             "profileUrl": "/athletes/maxime-dupont",
             "certified": true,
@@ -160,7 +169,7 @@ const itemsData = [
             "name": "Léa Fontaine",
             "location": "Rennes, France",
             "category": "Gymnastics",
-            "price": "730 €",
+            "price": "730",
             "isCarousel": true,
             "profileUrl": "/athletes/lea-fontaine",
             "certified": false,
@@ -174,7 +183,7 @@ const itemsData = [
             "name": "Antoine Leroy",
             "location": "Dijon, France",
             "category": "Judo",
-            "price": "880 €",
+            "price": "880",
             "isCarousel": true,
             "profileUrl": "/athletes/antoine-leroy",
             "certified": true,
@@ -188,7 +197,7 @@ const itemsData = [
             "name": "Sophie Dufresne",
             "location": "Montpellier, France",
             "category": "Handball",
-            "price": "920 €",
+            "price": "920",
             "isCarousel": true,
             "profileUrl": "/athletes/sophie-dufresne",
             "certified": true,
@@ -202,7 +211,7 @@ const itemsData = [
             "name": "Julien Morel",
             "location": "Marseille, France",
             "category": "Diving",
-            "price": "845 €",
+            "price": "845",
             "isCarousel": true,
             "profileUrl": "/athletes/julien-morel",
             "certified": true,
@@ -216,7 +225,7 @@ const itemsData = [
             "name": "Élodie Richard",
             "location": "Toulon, France",
             "category": "Surfing",
-            "price": "700 €",
+            "price": "700",
             "isCarousel": true,
             "profileUrl": "/athletes/elodie-richard",
             "certified": false,
@@ -230,7 +239,7 @@ const itemsData = [
             "name": "Thomas Garnier",
             "location": "Lille, France",
             "category": "Fencing",
-            "price": "980 €",
+            "price": "980",
             "isCarousel": true,
             "profileUrl": "/athletes/thomas-garnier",
             "certified": false,
@@ -289,12 +298,12 @@ const ItemComponent = ({ item }) => {
 
             {/* Infos utilisateur */}
             <div className="flex flex-col mt-3">
-                <h1 className="font-semibold text-base leading-5">{item.name}</h1>
-                <p className="font-light text-base dark:text-white/50 text-black/50 leading-5">
+                <h1 className="font-medium text-base leading-5">{item.name}</h1>
+                <p className="font-normal text-sm dark:text-white/50 text-black/50 leading-5">
                     {item.location} <span className="font-bold">·</span> {item.category}
                 </p>
-                <p className="font-normal text-base leading-5 mt-1">
-                    À partir de <span className="font-semibold">{item.price}</span>
+                <p className="font-normal text-sm leading-5 mt-1">
+                    À partir de <span className="font-medium text-base">{item.price}</span>€
                 </p>
             </div>
         </div>
@@ -309,33 +318,21 @@ export default function Page() {
                 {/* HEADER */}
 
 
-                <header className="relative flex items-center justify-center border-b px-6 md:px-12 2xl:px-24 py-4 border-b">
+                <header className="relative flex items-center justify-center border-b px-6 md:px-12 2xl:px-24 py-4 font-airbnb-cereal">
                     {/* 🔹 Logo (absolute left) */}
                     <div className="absolute left-6 md:left-12 2xl:left-24">
                         <Logo />
                     </div>
 
                     {/* 🔹 Search Bar (centered) */}
-                    <div className="relative w-full max-w-md flex items-center  bg-muted/50 rounded-xl">
-                        <input
-                            type="text"
-                            placeholder="Search athletes..."
-                            className="w-full outline-none font-semi bold ps-4 bg-transparent text-sm"
-                        />
-                        {/* 🔹 Circular Search Button */}
-                        <button className="m-1.5 bg-black text-white dark:bg-white dark:text-black p-2.5 rounded-xl hover:bg-gray-700 transition">
-                            <Search className="w-3 h-3" strokeWidth={4} />
-                        </button>
+                    <div className="relative w-full max-w-md flex items-center">
+                        <NavigationMenuDemo />
                     </div>
+                    
 
                     {/* 🔹 Sidebar Toggle Button (absolute right) */}
-                    <div className="absolute right-6 md:right-12 2xl:right-24 border flex gap-4 items-center rounded-full p-2 rounded-xl">
-                        <AlignJustify className="h-4 w-4 ms-2"/>
-                        <Avatar className="h-8 w-8 rounded-xl ">
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                        {/* <SidebarTrigger /> */}
+                    <div className="absolute right-6 md:right-12 2xl:right-24 border flex gap-4 items-center rounded-xl">
+                        <NavUser user={data.user} />
                     </div>
                 </header>
 

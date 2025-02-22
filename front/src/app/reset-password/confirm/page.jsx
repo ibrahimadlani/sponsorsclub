@@ -1,5 +1,5 @@
-import { LoginForm } from "@/components/login-form";
 import Logo from "@/components/logo";
+import { ResetPasswordConfirmForm } from "@/components/reset-password-confirm-form";
 
 export default function LoginPage() {
   return (
@@ -9,7 +9,7 @@ export default function LoginPage() {
 
           <Logo />
         </a>
-        <LoginForm />
+        <ResetPasswordConfirmForm />
       </div>
     </div>)
   );
