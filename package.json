@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@radix-ui/react-toast": "^1.2.6",
-    "jwt-decode": "^4.0.0"
-  }
-}

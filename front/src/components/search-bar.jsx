@@ -1,7 +1,17 @@
 "use client";
+
 import { useState } from "react";
 
+/**
+ * SearchBar Component
+ *
+ * Renders a search bar with inputs for destination, check-in date, check-out date,
+ * and number of guests. Users can enter their travel details and click the search button.
+ *
+ * @returns {JSX.Element} The rendered search bar component.
+ */
 export default function SearchBar() {
+  // State hooks for managing user inputs
   const [destination, setDestination] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -9,10 +19,12 @@ export default function SearchBar() {
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-white p-4 rounded-3xl shadow-lg border border-gray-200 flex flex-col md:flex-row items-center gap-4">
-      
       {/* Destination Input */}
       <div className="flex flex-col w-full md:w-1/4">
-        <label htmlFor="destination" className="text-sm font-medium text-gray-700">
+        <label
+          htmlFor="destination"
+          className="text-sm font-medium text-gray-700"
+        >
           Destination
         </label>
         <input
@@ -61,7 +73,7 @@ export default function SearchBar() {
         <select
           id="guests"
           value={guests}
-          onChange={(e) => setGuests(e.target.value)}
+          onChange={(e) => setGuests(Number(e.target.value))}
           className="border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring focus:ring-gray-400 focus:border-gray-500 transition"
         >
           {[1, 2, 3, 4, 5, 6].map((num) => (
@@ -74,6 +86,7 @@ export default function SearchBar() {
 
       {/* Search Button */}
       <button className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition flex items-center gap-2">
+        {/* Search Icon */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-5 h-5"

@@ -1,16 +1,26 @@
-import Logo from "@/components/logo";
-import { ResetPasswordConfirmForm } from "@/components/reset-password-confirm-form";
+import Logo from "@/components/ui/logo";
+import { ResetPasswordConfirmForm } from "@/components/forms/reset-password-confirm-form";
 
-export default function LoginPage() {
+/**
+ * ResetPasswordConfirmPage Component
+ *
+ * This component renders the reset password confirmation page.
+ * It centers the content vertically and horizontally while displaying
+ * the company logo and a form for confirming the password reset.
+ *
+ * @returns {JSX.Element} The rendered reset password confirmation page.
+ */
+export default function ResetPasswordConfirmPage() {
   return (
-    (<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
-
+        {/* Header Logo: Clicking the logo typically redirects to the homepage */}
+        <a href="/" className="flex items-center gap-2 self-center font-medium">
           <Logo />
         </a>
+        {/* Reset Password Confirmation Form: Provides UI for confirming the password reset */}
         <ResetPasswordConfirmForm />
       </div>
-    </div>)
+    </div>
   );
 }
