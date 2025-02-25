@@ -2,21 +2,38 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { login } from "@/lib/api"; // Import API function
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { login } from "@/lib/userApi"; // Mise à jour de l'import depuis le module userApi
+import { toast } from "sonner"; // Import de sonner pour les notifications
+import { motion, AnimatePresence } from "framer-motion"; // Pour animer les erreurs
+import { Loader, XCircle } from "lucide-react"; // Icones Lucide
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// 🔹 Define Zod validation schema
+// 🔹 Définir le schéma de validation avec Zod
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(8, "Password must be at least 8 characters long"),
 });
+
+// Hashmap pour traduire les codes d'erreur en messages (pour les notifications)
+const errorMessages = {
+  INVALID_CREDENTIALS: "Identifiants invalides.",
+  USER_NOT_FOUND: "Utilisateur introuvable.",
+  ACCOUNT_LOCKED: "Compte verrouillé, veuillez contacter l'assistance.",
+  UNKNOWN_ERROR: "Une erreur inconnue est survenue.",
+};
 
 export function LoginForm({ className, ...props }) {
   const {
@@ -26,18 +43,30 @@ export function LoginForm({ className, ...props }) {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
-
+  
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+
+  // Vérifie l'URL pour afficher un toast en cas de déconnexion et supprimer le paramètre.
+  useEffect(() => {
+    
+    if (searchParams.get("origin") === "logout") {
+      toast.success("Déconnexion réussie !");
+      router.replace("/login");
+    }
+  }, [searchParams, router]);
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
       const response = await login(data.email, data.password);
+      toast.success("Connexion réussie !");
       console.log("Login Successful:", response);
-
-      router.push("/dashboard"); // Redirect to dashboard after login
+      router.push("/dashboard");
     } catch (error) {
+      const code = error.message || "UNKNOWN_ERROR";
+      toast.error(errorMessages[code] || "Erreur inconnue");
       console.error("Login Failed:", error.message || "Invalid credentials.");
     } finally {
       setLoading(false);
@@ -48,7 +77,7 @@ export function LoginForm({ className, ...props }) {
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Acceder à votre compte</CardTitle>
+          <CardTitle className="text-xl">Accéder à votre compte</CardTitle>
           <CardDescription>
             Se connecter avec Apple ou Google
           </CardDescription>
@@ -58,6 +87,7 @@ export function LoginForm({ className, ...props }) {
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
+                  {/* Bouton de connexion avec Apple */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -71,6 +101,7 @@ export function LoginForm({ className, ...props }) {
                   Se connecter avec Apple
                 </Button>
                 <Button variant="outline" className="w-full">
+                  {/* Bouton de connexion avec Google */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -93,26 +124,68 @@ export function LoginForm({ className, ...props }) {
 
               {/* Email Input */}
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" {...register("email")} placeholder="m@example.com" />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                <div className="flex items-center">
+                  <Label htmlFor="email">Email</Label>
+                  <AnimatePresence>
+                    {errors.email && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -5 }}
+                        transition={{ duration: 0.3 }}
+                        className="ml-2"
+                      >
+                        <XCircle className="text-red-500 w-4 h-4" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="m@example.com"
+                />
               </div>
 
               {/* Password Input */}
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Mot de passe</Label>
-                  <a href="/reset-password" className="ml-auto text-sm underline-offset-4 hover:underline">
+                  <AnimatePresence>
+                    {errors.password && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -5 }}
+                        transition={{ duration: 0.3 }}
+                        className="ml-2"
+                      >
+                        <XCircle className="text-red-500 w-4 h-4" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <a
+                    href="/reset-password"
+                    className="ml-auto text-sm underline-offset-4 hover:underline"
+                  >
                     Mot de passe oublié?
                   </a>
                 </div>
-                <Input id="password" type="password" {...register("password")} />
-                {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+                <Input
+                  id="password"
+                  type="password"
+                  {...register("password")}
+                />
               </div>
 
-              {/* Submit Button */}
+              {/* Bouton de soumission */}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Logging in..." : "Login"}
+                {loading ? (
+                  <Loader className={cn("w-5 h-5 ml-2 animate-spin")} />
+                ) : (
+                  "Login"
+                )}
               </Button>
             </div>
           </form>
@@ -127,7 +200,14 @@ export function LoginForm({ className, ...props }) {
       </div>
 
       <div className="text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 ">
-        En vous connectant, vous confirmez avoir lu et accepté nos <a href="/terms-of-service" className="hover:text-primary">Conditions Générales d’Utilisation</a> ainsi que notre <a href="/privacy-policy" className="hover:text-primary">Politique de Confidentialité</a>.
+        En vous connectant, vous confirmez avoir lu et accepté nos{" "}
+        <a href="/terms-of-service" className="hover:text-primary">
+          Conditions Générales d’Utilisation
+        </a>{" "}
+        ainsi que notre{" "}
+        <a href="/privacy-policy" className="hover:text-primary">
+          Politique de Confidentialité
+        </a>.
       </div>
     </div>
   );

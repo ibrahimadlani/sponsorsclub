@@ -1,4 +1,5 @@
 import localFont from "next/font/local";
+import { Toaster } from "@/components/ui/sonner"
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./styles/globals.css";
@@ -53,7 +54,9 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           {/* ThemeProvider manages the application's theme (light/dark/system) */}
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Toaster />
             {children}
+
           </ThemeProvider>
         </AuthProvider>
       </body>

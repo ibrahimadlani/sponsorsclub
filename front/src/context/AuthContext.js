@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
             }
         } else {
             // 🚀 Rediriger vers /login si l'utilisateur n'est pas connecté et essaie d'aller sur une page protégée
-            if (!["/login", "/register", "/reset-password", "/reset-password/confirm"].includes(pathname)) {
+            if (!["/login", "/register", "/reset-password", "/reset-password/confirm", "/", "/settings"].includes(pathname)) {
                 router.replace("/login");
             }
         }

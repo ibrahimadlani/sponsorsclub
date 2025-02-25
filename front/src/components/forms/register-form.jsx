@@ -4,33 +4,48 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registerUser } from "@/lib/api"; // Import API function
+import { registerUser } from "@/lib/api"; // Import de la fonction API pour l'inscription
+import { toast } from "sonner"; // Pour les notifications toast
+import { motion, AnimatePresence } from "framer-motion"; // Pour animer les erreurs
+import { XCircle } from "lucide-react"; // Icône d'erreur
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-// 🔹 Define Zod validation schema
+// 🔹 Définir le schéma de validation avec Zod
 const registerSchema = z
   .object({
-    first_name: z.string().min(2, "First name is required"),
-    last_name: z.string().min(2, "Last name is required"),
-    email: z.string().email("Invalid email format"),
-    phone_country_code: z.string().min(2, "Select a country code"),
-    phone_number: z.string().min(8, "Invalid phone number"),
+    first_name: z.string().min(2, "Le prénom est requis"),
+    last_name: z.string().min(2, "Le nom est requis"),
+    email: z.string().email("Format d'email invalide"),
+    phone_country_code: z.string().min(2, "Veuillez sélectionner un indicatif"),
+    phone_number: z.string().min(8, "Numéro de téléphone invalide"),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters long")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[0-9]/, "Must contain at least one number")
-      .regex(/[@$!%*?&]/, "Must contain at least one special character"),
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères")
+      .regex(/[A-Z]/, "Doit contenir au moins une majuscule")
+      .regex(/[0-9]/, "Doit contenir au moins un chiffre")
+      .regex(/[@$!%*?&]/, "Doit contenir au moins un caractère spécial"),
     confirm_password: z.string(),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "Passwords do not match",
+    message: "Les mots de passe ne correspondent pas",
     path: ["confirm_password"],
   });
 
@@ -60,16 +75,31 @@ export function RegisterForm({ className, ...props }) {
       };
 
       await registerUser(userData);
-
-      console.log("Registration Successful: A verification email has been sent.");
-
-      router.push("/login?registered=true");
+      toast.success("Inscription réussie ! Un email de vérification vous a été envoyé.");
+      console.log("Registration Successful");
+      router.push("/login");
     } catch (error) {
+      toast.error(error.message || "Une erreur est survenue lors de l'inscription.");
       console.error("Registration Failed:", error.message || "An error occurred.");
     } finally {
       setLoading(false);
     }
   };
+
+  // Fonction utilitaire pour afficher une icône d'erreur animée
+  const ErrorIcon = () => (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, x: -5 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -5 }}
+        transition={{ duration: 0.3 }}
+        className="ml-2"
+      >
+        <XCircle className="text-red-500 w-4 h-4" />
+      </motion.div>
+    </AnimatePresence>
+  );
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -83,6 +113,7 @@ export function RegisterForm({ className, ...props }) {
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
+                  {/* Bouton d'inscription avec Apple */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -96,6 +127,7 @@ export function RegisterForm({ className, ...props }) {
                   S'inscrire avec Apple
                 </Button>
                 <Button variant="outline" className="w-full">
+                  {/* Bouton d'inscription avec Google */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -116,68 +148,111 @@ export function RegisterForm({ className, ...props }) {
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
 
+            <div className="grid grid-cols-2 gap-3">
               {/* First Name */}
               <div className="grid gap-2">
-                <Label htmlFor="first_name">Prénom</Label>
+                <div className="flex items-center">
+                  <Label htmlFor="first_name">Prénom</Label>
+                  <AnimatePresence>
+                    {errors.first_name && <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }} transition={{ duration: 0.3 }} className="ml-2">
+                      <XCircle className="text-red-500 w-4 h-4" />
+                    </motion.div>}
+                  </AnimatePresence>
+                </div>
                 <Input id="first_name" {...register("first_name")} />
-                {errors.first_name && <p className="text-red-500 text-sm">{errors.first_name.message}</p>}
               </div>
 
               {/* Last Name */}
               <div className="grid gap-2">
-                <Label htmlFor="last_name">Nom</Label>
+                <div className="flex items-center">
+                  <Label htmlFor="last_name">Nom</Label>
+                  <AnimatePresence>
+                    {errors.last_name && <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }} transition={{ duration: 0.3 }} className="ml-2">
+                      <XCircle className="text-red-500 w-4 h-4" />
+                    </motion.div>}
+                  </AnimatePresence>
+                </div>
                 <Input id="last_name" {...register("last_name")} />
-                {errors.last_name && <p className="text-red-500 text-sm">{errors.last_name.message}</p>}
               </div>
             </div>
 
             {/* Email */}
             <div className="grid gap-2 mt-4">
-              <Label htmlFor="email">Email</Label>
+              <div className="flex items-center">
+                <Label htmlFor="email">Email</Label>
+                <AnimatePresence>
+                  {errors.email && <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }} transition={{ duration: 0.3 }} className="ml-2">
+                    <XCircle className="text-red-500 w-4 h-4" />
+                  </motion.div>}
+                </AnimatePresence>
+              </div>
               <Input id="email" type="email" {...register("email")} />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             </div>
 
             {/* Phone Number */}
-            <div className="grid grid-cols-8 gap-3 mt-4 ">
+            <div className="grid grid-cols-8 gap-3 mt-4">
               <div className="grid col-span-3 gap-2">
-                <Label htmlFor="phone_country_code">Indicatif</Label>
+                <div className="flex items-center">
+                  <Label htmlFor="phone_country_code">Indicatif</Label>
+                  <AnimatePresence>
+                    {errors.phone_country_code && <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }} transition={{ duration: 0.3 }} className="ml-2">
+                      <XCircle className="text-red-500 w-4 h-4" />
+                    </motion.div>}
+                  </AnimatePresence>
+                </div>
                 <Select onValueChange={(val) => setValue("phone_country_code", val)}>
                   <SelectTrigger className="h-9">
                     <SelectValue placeholder="🇫🇷 +33" defaultValue="+33" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="+33">🇫🇷 +33</SelectItem>
-                    <SelectItem value="+1">🇺🇸  +1</SelectItem>
+                    <SelectItem value="+1">🇺🇸 +1</SelectItem>
                     <SelectItem value="+44">🇬🇧 +44</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="grid col-span-5 gap-2">
-                <Label htmlFor="phone_number">Numéro de téléphone</Label>
+                <div className="flex items-center">
+                  <Label htmlFor="phone_number">Numéro de téléphone</Label>
+                  <AnimatePresence>
+                    {errors.phone_number && <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }} transition={{ duration: 0.3 }} className="ml-2">
+                      <XCircle className="text-red-500 w-4 h-4" />
+                    </motion.div>}
+                  </AnimatePresence>
+                </div>
                 <Input id="phone_number" {...register("phone_number")} />
-
               </div>
             </div>
-            {errors.phone_country_code && <p className="text-red-500 text-sm">{errors.phone_country_code.message}</p>}
-            {errors.phone_number && <p className="text-red-500 text-sm">{errors.phone_number.message}</p>}
-            {/* Passwords */}
+
+            {/* Password */}
             <div className="grid gap-2 mt-4">
-              <Label htmlFor="password">Mot de passe</Label>
+              <div className="flex items-center">
+                <Label htmlFor="password">Mot de passe</Label>
+                <AnimatePresence>
+                  {errors.password && <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }} transition={{ duration: 0.3 }} className="ml-2">
+                    <XCircle className="text-red-500 w-4 h-4" />
+                  </motion.div>}
+                </AnimatePresence>
+              </div>
               <Input id="password" type="password" {...register("password")} />
-              {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
             </div>
 
+            {/* Confirm Password */}
             <div className="grid gap-2 mt-4">
-              <Label htmlFor="confirm_password">Confirmer le mot de passe </Label>
+              <div className="flex items-center">
+                <Label htmlFor="confirm_password">Confirmer le mot de passe</Label>
+                <AnimatePresence>
+                  {errors.confirm_password && <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }} transition={{ duration: 0.3 }} className="ml-2">
+                    <XCircle className="text-red-500 w-4 h-4" />
+                  </motion.div>}
+                </AnimatePresence>
+              </div>
               <Input id="confirm_password" type="password" {...register("confirm_password")} />
-              {errors.confirm_password && <p className="text-red-500 text-sm">{errors.confirm_password.message}</p>}
             </div>
 
-            {/* Submit Button */}
+            {/* Bouton de soumission */}
             <Button type="submit" className="w-full mt-6" disabled={loading}>
               {loading ? "Inscription..." : "S'inscrire"}
             </Button>
@@ -192,7 +267,14 @@ export function RegisterForm({ className, ...props }) {
       </div>
 
       <div className="text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 ">
-        En vous inscrivant, vous confirmez avoir lu et accepté nos <a href="/terms-of-service" className="hover:text-primary">Conditions Générales d’Utilisation</a> ainsi que notre <a href="/privacy-policy" className="hover:text-primary">Politique de Confidentialité</a>.
+        En vous inscrivant, vous confirmez avoir lu et accepté nos{" "}
+        <a href="/terms-of-service" className="hover:text-primary">
+          Conditions Générales d’Utilisation
+        </a>{" "}
+        ainsi que notre{" "}
+        <a href="/privacy-policy" className="hover:text-primary">
+          Politique de Confidentialité
+        </a>.
       </div>
     </div>
   );

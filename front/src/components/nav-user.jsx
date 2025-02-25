@@ -19,6 +19,7 @@ import { logout } from "@/lib/api"; // API function to log out the user
 import { useTheme } from "next-themes"; // Hook to manage theme (light/dark)
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +35,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+
 
 /**
  * NavUser Component
@@ -89,10 +91,7 @@ export function NavUser({ user }) {
                   {user.firstName ? user.firstName.slice(0, 2).toUpperCase() : ""}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
+
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -145,14 +144,12 @@ export function NavUser({ user }) {
             <DropdownMenuSeparator />
 
             {/* Preferences and Account Options */}
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              Préferences
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <BadgeCheck className="mr-2 h-4 w-4" />
-              Compte
-            </DropdownMenuItem>
+            <Link href="/settings" passHref>
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                Préférences
+              </DropdownMenuItem>
+            </Link>
 
             {/* Theme Toggle */}
             <DropdownMenuItem onClick={toggleTheme}>
@@ -172,7 +169,7 @@ export function NavUser({ user }) {
             <DropdownMenuSeparator />
 
             {/* Logout Option */}
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout } className="  hover:!text-red-600">
               <LogOut className="mr-2 h-4 w-4" />
               Déconnexion
             </DropdownMenuItem>

@@ -1,3 +1,4 @@
+
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 // 🔹 Reset Password Request
@@ -50,7 +51,6 @@ export const registerUser = async (userData) => {
   return res.json();
 };
 
-// 🔹 Login User
 export const login = async (email, password) => {
   const res = await fetch(`${API_BASE_URL}/api/auth/login/`, {
     method: "POST",
@@ -60,12 +60,21 @@ export const login = async (email, password) => {
     body: JSON.stringify({ email, password }),
   });
 
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Login failed");
+  let data;
+  try {
+    data = await res.json();
+  } catch (parseError) {
+    throw new Error("Internal server error");
   }
 
-  const data = await res.json();
+  if (!res.ok) {
+    // Création d'une erreur personnalisée incluant le status
+    const error = new Error(data.message || "Login failed");
+    error.status = res.status;
+    throw error;
+  }
+
+  // Sauvegarde des tokens dans le localStorage
   localStorage.setItem("accessToken", data.access);
   localStorage.setItem("refreshToken", data.refresh);
   return data;
@@ -99,7 +108,8 @@ export const logout = () => {
   localStorage.removeItem("refreshToken");
 
   // Redirect to login page
-  window.location.href = "/login";
+  window.location.href = "/login?origin=logout";
+  
 };
 
 // 🔹 Fetch User Profile
