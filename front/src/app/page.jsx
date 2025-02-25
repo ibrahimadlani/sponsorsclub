@@ -10,6 +10,8 @@ import {
   Mail,
   Handshake,
   UserCircle,
+  MessageSquare,
+  Heart,
 
 } from "lucide-react";
 import {
@@ -25,6 +27,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+
+import { handleScroll } from "@/lib/utils";
 
 import { CardContent } from "@/components/ui/card";
 import Logo from "@/components/ui/logo";
@@ -280,20 +284,21 @@ const ItemComponent = ({ item }) => {
 export default function Page() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
+  const [isHidden, setIsHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
-    // Simulate API loading time
-    setTimeout(() => {
-      setItems(itemsData); // Load real data
-      setLoading(false);
-    }, 2000); // 2 seconds delay
-  }, []);
+    const onScroll = () => handleScroll(setIsHidden, lastScrollY, setLastScrollY);
+
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [lastScrollY]);
 
   return (
     <SidebarProvider>
       <SidebarInset>
         {/* HEADER */}
-        <header className="relative flex items-center justify-center border-b px-6 md:px-12 2xl:px-24 py-4 min-h-[80px]">
+        <header className="relative flex items-center justify-center border-b px-6 md:px-12 2xl:px-24 py-4 min-h-[80px] ">
           {/* Logo (positionné à gauche) */}
 
           <div className="absolute left-6 top-6 md:left-12 2xl:left-24">
@@ -378,26 +383,34 @@ export default function Page() {
           </div>
         </footer>
         {/* FOOTER - version mobile */}
-        <footer className="sticky bottom-0 w-full py-2.5 bg-background text-center border-t md:hidden px-7">
-          <div className="flex justify-between opacity-75">
-            <Link href="/explorer" className="flex flex-col items-center gap-1 font-medium antialiased">
-              <Search className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-semibold">Explorer</span>
-            </Link>
-            <Link href="/messages" className="flex flex-col items-center gap-1 font-medium antialiased">
-              <Mail className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Messages</span>
-            </Link>
-            <Link href="/collab" className="flex flex-col items-center gap-1 font-medium antialiased">
-              <Handshake className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Collab.</span>
-            </Link>
-            <Link href="/profile" className="flex flex-col items-center gap-1 font-medium antialiased">
-              <UserCircle className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Profile</span>
-            </Link>
-          </div>
-        </footer>
+        <footer
+      className={`fixed bottom-0 w-full py-3 bg-background text-center border-t md:hidden px-7 transition-transform duration-300 ease-in-out ${
+        isHidden ? "translate-y-full" : "translate-y-0"
+      }`}
+    >
+      <div className="flex justify-between  w-full max-w-[560px] mx-auto ">
+        <Link href="/explorer" className="flex flex-col items-center gap-0.5 font-medium antialiased  w-full text-pink-500">
+          <Search className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
+          <span className="text-[0.625rem]">Explorer</span>
+        </Link>
+        <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased  w-full opacity-70">
+          <Heart className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
+          <span className="text-[0.625rem]">Followed</span>
+        </Link>
+        <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased  w-full opacity-70">
+          <MessageSquare className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
+          <span className="text-[0.625rem]">Messages</span>
+        </Link>
+        <Link href="/collab" className="flex flex-col items-center gap-0.5 font-medium antialiased  w-full opacity-70">
+          <Handshake className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
+          <span className="text-[0.625rem]">Collab.</span>
+        </Link>
+        <Link href="/profile" className="flex flex-col items-center gap-0.5 font-medium antialiased  w-full opacity-70">
+          <UserCircle className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
+          <span className="text-[0.625rem]">Profile</span>
+        </Link>
+      </div>
+    </footer>
 
       </SidebarInset>
     </SidebarProvider>

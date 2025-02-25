@@ -8,9 +8,9 @@ export default function SkeletonItem() {
       
       {/* Text Placeholder */}
       <div className="space-y-2">
-        <Skeleton className="h-5 w-1/3 rounded" />
-        <Skeleton className="h-4 w-1/2 rounded" />
-        <Skeleton className="h-4 w-1/3 rounded" />
+        <Skeleton className="h-5 w-[150px] rounded" />
+        <Skeleton className="h-4 w-[250px] rounded" />
+        <Skeleton className="h-4 w-[175px] rounded" />
       </div>
     </div>
   );
