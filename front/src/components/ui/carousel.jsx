@@ -30,12 +30,29 @@ const Carousel = React.forwardRef((
   },
   ref
 ) => {
-  const [carouselRef, api] = useEmblaCarousel({
-    ...opts,
-    axis: orientation === "horizontal" ? "x" : "y",
-  }, plugins)
+
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Mobile breakpoint
+    };
+  
+    checkMobile(); // Check on mount
+    window.addEventListener("resize", checkMobile); // Listen for window resize
+  
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+  
+  const [carouselRef, api] = useEmblaCarousel(
+    {
+      axis: orientation === "horizontal" ? "x" : "y",
+      watchDrag: isMobile, // ✅ Disable swipe for non-mobile users
+    },
+    plugins
+  );
 
   const onSelect = React.useCallback((api) => {
     if (!api) {
