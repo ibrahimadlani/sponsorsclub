@@ -16,6 +16,9 @@ import {
   Bell,
   Moon,
   Sun,
+  Instagram,
+  Facebook,
+  Youtube,
 
 } from "lucide-react";
 import {
@@ -59,169 +62,213 @@ const itemsData = [
     id: 1,
     name: "Jean Skieur",
     location: "Chamonix, France",
-    category: "Ski Freestyle",
+    category: "⛷️ Ski Freestyle",
     price: "675",
     isCarousel: true,
     profileUrl: "/athletes/jean-skieur",
     certified: true,
     images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-3.jpg"],
+    bio: "Champion national de ski freestyle, 2 podiums en Coupe d'Europe. En quête de sponsors pour les X Games.",
+    subscribers: { vb: 15000, instagram: 52000, youtube: 78000 },
+    level: "PRO",
   },
   {
     id: 2,
     name: "Sophie Martin",
     location: "Lyon, France",
-    category: "Tennis",
+    category: "🎾 Tennis",
     price: "850",
     isCarousel: true,
     profileUrl: "/athletes/sophie-martin",
     certified: true,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg"],
+    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
+    bio: "Joueuse WTA classée top 300, finaliste d'un ITF 25k. Recherche sponsors pour la saison internationale.",
+    subscribers: { vb: 12000, instagram: 60000, youtube: 35000 },
+    level: "HAUT NIVEAU",
   },
   {
     id: 3,
     name: "Lucas Durand",
     location: "Marseille, France",
-    category: "Basketball",
+    category: "🏀 Basketball",
     price: "720",
     isCarousel: true,
     profileUrl: "/athletes/lucas-durand",
     certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg"],
+    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
+    bio: "Meneur de jeu en Pro B, ancien espoir NBA. En route vers l'EuroLeague.",
+    subscribers: { vb: 21000, instagram: 80000, youtube: 50000 },
+    level: "PRO",
   },
   {
     id: 4,
     name: "Emma Leclerc",
     location: "Nice, France",
-    category: "Swimming",
+    category: "🏊‍♀️ Swimming",
     price: "900",
     isCarousel: true,
     profileUrl: "/athletes/emma-leclerc",
-    certified: false,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-3.jpg"],
+     certified: true,
+    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-1.jpg"],
+    bio: "Spécialiste du 200m nage libre, membre de l'équipe de France juniors.",
+    subscribers: { vb: 8000, instagram: 34000, youtube: 20000 },
+    level: "SEMI PRO",
   },
   {
     id: 5,
     name: "Nathan Giraud",
     location: "Paris, France",
-    category: "Football",
+    category: "⚽ Football",
     price: "1050",
     isCarousel: true,
     profileUrl: "/athletes/nathan-giraud",
     certified: true,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg"],
+    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
+    bio: "Milieu offensif en Ligue 2, prêt pour le grand saut en Ligue 1.",
+    subscribers: { vb: 33000, instagram: 92000, youtube: 41000 },
+    level: "PRO",
   },
   {
     id: 6,
     name: "Chloé Lambert",
     location: "Bordeaux, France",
-    category: "Cycling",
+    category: "🚴‍♀️ Cycling",
     price: "780",
     isCarousel: true,
     profileUrl: "/athletes/chloe-lambert",
     certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg"],
+    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
+    bio: "Championne U23 en contre-la-montre, ambitionne de rejoindre une équipe WorldTour.",
+    subscribers: { vb: 5000, instagram: 25000, youtube: 12000 },
+    level: "HAUT NIVEAU",
   },
   {
     id: 7,
     name: "Hugo Petit",
     location: "Toulouse, France",
-    category: "Rugby",
+    category: "🏉 Rugby",
     price: "970",
     isCarousel: true,
     profileUrl: "/athletes/hugo-petit",
     certified: true,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg"],
+    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-3.jpg"],
+    bio: "Pilier en Top 14, 3 sélections en équipe nationale espoir.",
+    subscribers: { vb: 14000, instagram: 49000, youtube: 29000 },
+    level: "PRO",
   },
   {
     id: 8,
     name: "Camille Roche",
     location: "Strasbourg, France",
-    category: "Athletics",
+    category: "🏃‍♂️ Athletics",
     price: "600",
     isCarousel: true,
     profileUrl: "/athletes/camille-roche",
-    certified: false,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg"],
+     certified: true,
+    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
+    bio: "Finaliste aux championnats nationaux du 800m, rêve des JO 2028.",
+    subscribers: { vb: 7000, instagram: 32000, youtube: 18000 },
+    level: "SEMI PRO",
   },
   {
     id: 9,
     name: "Maxime Dupont",
     location: "Grenoble, France",
-    category: "Snowboarding",
+    category: "🏂 Snowboarding",
     price: "820",
     isCarousel: true,
     profileUrl: "/athletes/maxime-dupont",
     certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg"],
+    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
+    bio: "Freestyler, top 10 aux Championnats d'Europe de big air.",
+    subscribers: { vb: 11000, instagram: 56000, youtube: 37000 },
+    level: "HAUT NIVEAU",
   },
   {
     id: 10,
     name: "Léa Fontaine",
     location: "Rennes, France",
-    category: "Gymnastics",
+    category: "🤸‍♀️ Gymnastics",
     price: "730",
     isCarousel: true,
     profileUrl: "/athletes/lea-fontaine",
-    certified: false,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg"],
+     certified: true,
+    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-1.jpg"],
+    bio: "Championne nationale en poutre, en route pour les championnats européens.",
+    subscribers: { vb: 9500, instagram: 48000, youtube: 26000 },
+    level: "HAUT NIVEAU",
   },
   {
     id: 11,
     name: "Antoine Leroy",
     location: "Dijon, France",
-    category: "Judo",
+    category: "🥋 Judo",
     price: "880",
     isCarousel: true,
     profileUrl: "/athletes/antoine-leroy",
     certified: true,
-    images: ["/images/judo-1.jpg", "/images/judo-2.jpg"],
+    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
+    bio: "Médaille de bronze aux championnats d’Europe juniors, rêve des Jeux Olympiques.",
+    subscribers: { vb: 10500, instagram: 51000, youtube: 29000 },
+    level: "HAUT NIVEAU",
   },
   {
     id: 12,
     name: "Sophie Dufresne",
     location: "Montpellier, France",
-    category: "Handball",
+    category: "🤾‍♀️ Handball",
     price: "920",
     isCarousel: true,
     profileUrl: "/athletes/sophie-dufresne",
     certified: true,
-    images: ["/images/handball-1.jpg", "/images/handball-2.jpg"],
+    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
+    bio: "Ailière droite en D1 féminine, ex-internationale U20, en quête de sponsors.",
+    subscribers: { vb: 13000, instagram: 57000, youtube: 32000 },
+    level: "PRO",
   },
   {
     id: 13,
     name: "Julien Morel",
     location: "Marseille, France",
-    category: "Diving",
+    category: "🤿 Diving",
     price: "845",
     isCarousel: true,
     profileUrl: "/athletes/julien-morel",
     certified: true,
-    images: ["/images/diving-1.jpg", "/images/diving-2.jpg"],
+    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-1.jpg"],
+    bio: "Finaliste aux Championnats d'Europe, spécialiste du 10m plateforme.",
+    subscribers: { vb: 8900, instagram: 41000, youtube: 22000 },
+    level: "HAUT NIVEAU",
   },
   {
     id: 14,
     name: "Élodie Richard",
     location: "Toulon, France",
-    category: "Surfing",
+    category: "🏄‍♀️ Surfing",
     price: "700",
     isCarousel: true,
     profileUrl: "/athletes/elodie-richard",
-    certified: false,
-    images: ["/images/surfing-1.jpg", "/images/surfing-2.jpg"],
+     certified: true,
+    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
+    bio: "Top 10 au circuit européen WSL junior, cherche sponsors pour saison mondiale.",
+    subscribers: { vb: 11200, instagram: 49000, youtube: 35000 },
+    level: "SEMI PRO",
   },
   {
     id: 15,
     name: "Thomas Garnier",
     location: "Lille, France",
-    category: "Fencing",
+    category: "🤺 Fencing",
     price: "980",
     isCarousel: true,
     profileUrl: "/athletes/thomas-garnier",
-    certified: false,
-    images: ["/images/athletics-1.jpg", "/images/athletics-2.jpg"],
+     certified: true,
+    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
+    bio: "Vice-champion national, objectif : qualification aux championnats du monde seniors.",
+    subscribers: { vb: 12500, instagram: 54000, youtube: 31000 },
+    level: "HAUT NIVEAU",
   },
 ];
-
 // Composant pour afficher chaque item
 const ItemComponent = ({ item }) => {
 
@@ -229,12 +276,14 @@ const ItemComponent = ({ item }) => {
     <div className="rounded-xl w-full group relative block transition-transform transform z-0">
       {/* Badge de certification */}
       {item.certified && (
-        <span className="absolute top-2 right-2 flex items-center gap-1 bg-pink-700 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
-          <BadgeCheck className="w-4 h-4 text-white" />
-          Pro
+        <span className="absolute top-4 left-4 flex items-center gap-1 text-black bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
+          {item.category}
         </span>
       )}
-
+      <span className="absolute top-4 right-4 flex items-center gap-1 text-white bg-pink-600 text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
+        <BadgeCheck className="w-4 h-4" strokeWidth={2} />
+        PRO
+      </span>
       {item.isCarousel ? (
         <div className="relative w-full h-64 rounded-xl overflow-hidden">
           <Carousel className="w-full h-full z-0">
@@ -270,12 +319,27 @@ const ItemComponent = ({ item }) => {
 
       {/* Informations de l'item */}
       <div className="flex flex-col mt-3">
-        <h1 className="font-medium text-base leading-5">{item.name}</h1>
-        <p className="font-normal text-sm dark:text-white/50 text-black/50 leading-5">
-          {item.location} <span className="font-bold">·</span> {item.category}
+        <div className="">
+          <div className="flex items-center gap-2">
+          <h1 className="font-medium text-base leading-2">{item.name}</h1>
+          <span className="absolute top-4 right-4 flex items-center gap-1 text-white bg-pink-600 text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
+            <BadgeCheck className="w-4 h-4" strokeWidth={2} />
+            {item.level}
+          </span>
+          </div>
+          <p className="font-normal text-sm dark:text-white/50 text-black/50 leading-5">
+            <span className="font-medium">{item.location}</span><span className="font-bold mx-2">·</span><span>{item.bio}</span>
+          </p>
+        </div>
+        <p className="font-medium text-sm dark:text-white/50 text-black/50 leading-5 flex  items-center gap-2 my-2 ">
+          <div className="flex items-center"><Instagram className="h-5 w-5 me-1" strokeWidth={1.5} />{item.subscribers.instagram}</div>
+          <span className="font-bold">·</span>
+          <div className="flex items-center"><Facebook className="h-5 w-5 me-1" strokeWidth={1.5} />{item.subscribers.vb}</div>
+          <span className="font-bold">·</span>
+          <div className="flex items-center"><Youtube className="h-5 w-5 me-1" strokeWidth={1.5} />{item.subscribers.youtube}</div>
         </p>
 
-        <p className="font-normal text-sm leading-5 mt-1">
+        <p className="font-normal text-sm leading-5">
           À partir de{" "}
           <span className="font-medium text-base">{item.price}</span>€
         </p>
