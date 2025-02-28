@@ -62,6 +62,7 @@ const itemsData = [
     images: ["/images/teddy-1.jpg", "/images/teddy-2.jpg", "/images/teddy-3.jpg"],
     bio: "Triple champion olympique, 11 fois champion du monde. Un des plus grands judokas de l’histoire.",
     subscribers: { vb: 200000, instagram: 800000, youtube: 150000 },
+    level: "PRO",
   },
   {
     id: 2,
@@ -75,6 +76,7 @@ const itemsData = [
     images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-3.jpg"],
     bio: "Phénomène du basket français et star de la NBA. L’un des plus grands espoirs du basket mondial.",
     subscribers: { vb: 250000, instagram: 3_500_000, youtube: 500000 },
+    level: "PRO",
   },
   {
     id: 3,
@@ -88,6 +90,7 @@ const itemsData = [
     images: ["/images/mbappe-1.jpg", "/images/mbappe-2.jpg", "/images/mbappe-3.jpg"],
     bio: "Champion du monde 2018, joueur du Real Madrid, leader de l’équipe de France.",
     subscribers: { vb: 1_000_000, instagram: 120_000_000, youtube: 2_000_000 },
+    level: "PRO",
   },
   {
     id: 4,
@@ -101,6 +104,7 @@ const itemsData = [
     images: ["/images/leon-1.jpg", "/images/leon-2.jpg", "/images/leon-3.jpg"],
     bio: "Champion du monde du 400m 4 nages et espoir olympique français.",
     subscribers: { vb: 35000, instagram: 1_200_000, youtube: 180000 },
+    level: "PRO",
   },
   {
     id: 5,
@@ -114,6 +118,7 @@ const itemsData = [
     images: ["/images/dupont-1.jpg", "/images/dupont-2.jpg", "/images/dupont-3.jpg"],
     bio: "Capitaine du XV de France, meilleur joueur du monde en 2021.",
     subscribers: { vb: 80000, instagram: 1_300_000, youtube: 400000 },
+    level: "PRO",
   },
   {
     id: 6,
@@ -127,6 +132,7 @@ const itemsData = [
     images: ["/images/clarisse-1.jpg", "/images/clarisse-2.jpg", "/images/clarisse-3.jpg"],
     bio: "Double championne olympique et six fois championne du monde de judo.",
     subscribers: { vb: 60000, instagram: 500000, youtube: 100000 },
+    level: "PRO",
   },
   {
     id: 7,
@@ -140,6 +146,7 @@ const itemsData = [
     images: ["/images/alize-1.jpg", "/images/alize-2.jpg", "/images/alize-3.jpg"],
     bio: "Joueuse emblématique du tennis français, avec plus de 60 participations en Grand Chelem.",
     subscribers: { vb: 30000, instagram: 200000, youtube: 80000 },
+    level: "PRO",
   },
   {
     id: 8,
@@ -153,6 +160,7 @@ const itemsData = [
     images: ["/images/romain-1.jpg", "/images/romain-2.jpg", "/images/romain-3.jpg"],
     bio: "Meilleur grimpeur français, multiple vainqueur d’étape sur le Tour de France.",
     subscribers: { vb: 50000, instagram: 300000, youtube: 120000 },
+    level: "PRO",
   },
   {
     id: 9,
@@ -166,6 +174,7 @@ const itemsData = [
     images: ["/images/estelle-1.jpg", "/images/estelle-2.jpg", "/images/estelle-3.jpg"],
     bio: "Championne olympique et multiple championne du monde de boxe.",
     subscribers: { vb: 70000, instagram: 400000, youtube: 100000 },
+    level: "PRO",
   },
   {
     id: 10,
@@ -179,6 +188,7 @@ const itemsData = [
     images: ["/images/justine-1.jpg", "/images/justine-2.jpg", "/images/justine-3.jpg"],
     bio: "Championne olympique et étoile montante du biathlon français.",
     subscribers: { vb: 40000, instagram: 250000, youtube: 75000 },
+    level: "PRO",
   },
   {
     id: 11,
@@ -192,6 +202,7 @@ const itemsData = [
     images: ["/images/thibaut-1.jpg", "/images/thibaut-2.jpg", "/images/thibaut-3.jpg"],
     bio: "Ancien vainqueur du Tourmalet, l’un des cyclistes français les plus appréciés.",
     subscribers: { vb: 60000, instagram: 700000, youtube: 180000 },
+    level: "PRO",
   },
   {
     id: 12,
@@ -205,6 +216,7 @@ const itemsData = [
     images: ["/images/kevin-1.jpg", "/images/kevin-2.jpg", "/images/kevin-3.jpg"],
     bio: "Recordman du monde du décathlon, double vice-champion olympique.",
     subscribers: { vb: 75000, instagram: 500000, youtube: 120000 },
+    level: "PRO",
   },
   {
     id: 13,
@@ -218,6 +230,7 @@ const itemsData = [
     images: ["/images/earvin-1.jpg", "/images/earvin-2.jpg", "/images/earvin-3.jpg"],
     bio: "Star du volley français, champion olympique et joueur emblématique.",
     subscribers: { vb: 90000, instagram: 400000, youtube: 110000 },
+    level: "PRO",
   },
   {
     id: 14,
@@ -228,49 +241,10 @@ const itemsData = [
     isCarousel: true,
     profileUrl: "/athletes/perrine-laffont",
     certified: true,
-    images: ["/images/perrine-1.jpg", "/images/perrine-2.jpg", "/images/perrine-1.jpg"],
+    images: ["/images/perrine-1.jpg", "/images/perrine-2.jpg", "/images/perrine-3.jpg"],
     bio: "Championne olympique de ski de bosses, en route pour Los Angles 2028.",
     subscribers: { vb: 8000, instagram: 34000, youtube: 20000 },
-    level: "SEMI PRO",
-  },
-  {
-    id: 16,
-    name: "Kylian Mbappé",
-    location: "Paris, France",
-    category: "⚽ Football",
-    price: "20 000",
-    isCarousel: true,
-    profileUrl: "/athletes/kylian-mbappe",
-    certified: true,
-    images: ["/images/mbappe-1.jpg", "/images/mbappe-2.jpg", "/images/mbappe-3.jpg"],
-    bio: "Attaquant vedette du Paris Saint-Germain et de l'équipe de France, champion du monde 2018.",
-    subscribers: { vb: 50000, instagram: 70000000, youtube: 1500000 },
-  },
-  {
-    id: 17,
-    name: "Clarisse Agbegnenou",
-    location: "Paris, France",
-    category: "🥋 Judo",
-    price: "12 000",
-    isCarousel: true,
-    profileUrl: "/athletes/clarisse-agbegnenou",
-    certified: true,
-    images: ["/images/clarisse-1.jpg", "/images/clarisse-2.jpg", "/images/clarisse-3.jpg"],
-    bio: "Quintuple championne du monde et double championne olympique en judo.",
-    subscribers: { vb: 15000, instagram: 300000, youtube: 50000 },
-  },
-  {
-    id: 18,
-    name: "Kevin Mayer",
-    location: "Montpellier, France",
-    category: "🏃‍♂️ Athlétisme",
-    price: "10 500",
-    isCarousel: true,
-    profileUrl: "/athletes/kevin-mayer",
-    certified: true,
-    images: ["/images/mayer-1.jpg", "/images/mayer-2.jpg", "/images/mayer-3.jpg"],
-    bio: "Recordman du monde du décathlon et double médaillé d'argent olympique.",
-    subscribers: { vb: 12000, instagram: 250000, youtube: 80000 },
+    level: "PRO",
   },
   {
     id: 19,
@@ -284,58 +258,7 @@ const itemsData = [
     images: ["/images/garcia-1.jpg", "/images/garcia-2.jpg", "/images/garcia-3.jpg"],
     bio: "Joueuse de tennis professionnelle, vainqueure de plusieurs titres WTA en simple et double.",
     subscribers: { vb: 11000, instagram: 200000, youtube: 60000 },
-  },
-  {
-    id: 20,
-    name: "Florent Manaudou",
-    location: "Marseille, France",
-    category: "🏊‍♂️ Natation",
-    price: "8 500",
-    isCarousel: true,
-    profileUrl: "/athletes/florent-manaudou",
-    certified: true,
-    images: ["/images/manaudou-1.jpg", "/images/manaudou-2.jpg", "/images/manaudou-3.jpg"],
-    bio: "Champion olympique du 50m nage libre en 2012 et multiple médaillé mondial.",
-    subscribers: { vb: 10000, instagram: 300000, youtube: 70000 },
-  },
-  {
-    id: 21,
-    name: "Pauline Ferrand-Prévot",
-    location: "Reims, France",
-    category: "🚴‍♀️ Cyclisme",
-    price: "7 200",
-    isCarousel: true,
-    profileUrl: "/athletes/pauline-ferrand-prevot",
-    certified: true,
-    images: ["/images/pauline-1.jpg", "/images/pauline-2.jpg", "/images/pauline-3.jpg"],
-    bio: "Multiple championne du monde en cyclisme sur route, VTT et cyclo-cross.",
-    subscribers: { vb: 9000, instagram: 150000, youtube: 40000 },
-  },
-  {
-    id: 22,
-    name: "Renaud Lavillenie",
-    location: "Clermont-Ferrand, France",
-    category: "🏃‍♂️ Athlétisme",
-    price: "9 000",
-    isCarousel: true,
-    profileUrl: "/athletes/renaud-lavillenie",
-    certified: true,
-    images: ["/images/lavillenie-1.jpg", "/images/lavillenie-2.jpg", "/images/lavillenie-3.jpg"],
-    bio: "Champion olympique 2012 et ancien recordman du monde du saut à la perche.",
-    subscribers: { vb: 9500, instagram: 220000, youtube: 50000 },
-  },
-  {
-    id: 23,
-    name: "Marie-José Pérec",
-    location: "Basse-Terre, Guadeloupe",
-    category: "🏃‍♀️ Athlétisme",
-    price: "8 000",
-    isCarousel: true,
-    profileUrl: "/athletes/marie-jose-perec",
-    certified: true,
-    images: ["/images/perec-1.jpg", "/images/perec-2.jpg", "/images/perec-3.jpg"],
-    bio: "Triple championne olympique sur 400m et 200m.",
-    subscribers: { vb: 8500, instagram: 180000, youtube: 45000 },
+    level: "PRO",
   },
   {
     id: 24,
@@ -349,22 +272,9 @@ const itemsData = [
     images: ["/images/yoka-1.jpg", "/images/yoka-2.jpg", "/images/yoka-3.jpg"],
     bio: "Champion olympique des poids super-lourds en 2016, boxeur professionnel invaincu.",
     subscribers: { vb: 11500, instagram: 250000, youtube: 90000 },
-  },
-  {
-    id: 25,
-    name: "Estelle Mossely",
-    location: "Paris, France",
-    category: "🥊 Boxe",
-    price: "9 500",
-    isCarousel: true,
-    profileUrl: "/athletes/estelle-mossely",
-    certified: true,
-    images: ["/images/mossely-1.jpg", "/images/mossely-2.jpg", "/images/mossely-3.jpg"],
-    bio: "Championne olympique des poids légers en 2016, championne du monde WBA.",
-    subscribers: { vb: 10500, instagram: 200000, youtube: 75000 },
+    level: "PRO",
   },
 
-  
 ];
 
 // Composant pour afficher chaque item
@@ -463,7 +373,7 @@ export default function Page() {
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // ✅ Fetch data (Simulating API call)
+  // Fetch data (Simulating API call)
   useEffect(() => {
     setTimeout(() => {
       setItems(itemsData); // Load data after delay (simulate API call)
@@ -500,19 +410,10 @@ export default function Page() {
               <Logo className="md:hidden mx-auto" />
 
             </div>
-
-            {/* User Authentication Controls (Right side) */}
-              {user ? (
-                <div className="absolute flex right-0 top-4 md:right-12 2xl:right-24 gap-1 items-center">
+            <div className="absolute flex right-0 top-4 md:right-12 2xl:right-24 gap-1 items-center ">
                 <NavUser user={user} />
-                </div>
-              ) : (
-                <div className="absolute flex right-0 top-5.5 md:right-12 2xl:right-24 gap-1 items-center">
-                <Link href="/login" className="p-3 hover:bg-muted/50 rounded-full text-sm font-semibold">
-                  <AlignJustify className="w-4 h-4" />
-                  </Link>
-                </div>
-              )}
+              </div>
+
             </div>
         </header>
 

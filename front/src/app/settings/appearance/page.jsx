@@ -1,6 +1,7 @@
+"use client";
+
 import { Separator } from "@/components/ui/separator"
 import { AppearanceForm } from "@/components/forms/appearance-form"
-import { NotificationsForm } from "@/components/forms/notifications-form"
 
 export default function SettingsAppearancePage() {
   return (

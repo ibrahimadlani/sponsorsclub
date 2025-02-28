@@ -1,6 +1,6 @@
+"use client";
+
 import { Separator } from "@/components/ui/separator"
-import { ProfileForm } from "@/components/forms/profile-form"
-import { NotificationsForm } from "@/components/forms/notifications-form"
 import { DisplayForm } from "@/components/forms/display-form"
 
 export default function SettingsDisplayPage() {

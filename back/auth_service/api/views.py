@@ -169,13 +169,81 @@ class VerifyEmailView(APIView):
         except User.DoesNotExist:
             return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user.token_expiry < now():
+        if user.verification_token_expiry < now():
             return Response({"error": "Token has expired."}, status=status.HTTP_400_BAD_REQUEST)
 
         user.is_active = True
         user.is_verified = True
         user.verification_token = None  # Remove the token after verification
-        user.token_expiry = None
+        user.verification_token_expiry = None
+        user.save()
+
+        return Response({"message": "Your account has been activated successfully!"}, status=status.HTTP_200_OK)
+
+
+class RegisterUserAPIView(generics.CreateAPIView):
+    """API endpoint to register a new user and send an email verification link."""
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def create(self, request, *args, **kwargs):
+        """Override create method to generate verification token and send email."""
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save(is_active=False)  # Set user as inactive initially
+
+            # Generate a unique verification token
+            verification_token = str(uuid.uuid4())
+            user.verification_token = verification_token
+            user.verification_token_expiry = now() + timedelta(hours=24)  # Token valid for 24 hours
+            user.save()
+
+            # Construct verification link
+            verification_link = f"http://localhost:3000/verify-email?token={verification_token}"
+
+            # Send verification email
+            send_mail(
+                subject="SponsorsClub · Confirm Your Email",
+                message=f"Click the link to confirm your email: {verification_link}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+            return Response(
+                {"message": "Account created successfully. Check your email to verify your account."},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+
+
+class VerifyEmailAPIView(APIView):
+    """API endpoint to verify email and activate user account."""
+
+    def post(self, request):
+        """Activate account if the verification token is valid."""
+        token = request.data.get("token")
+
+        if not token:
+            return Response({"error": "Verification token is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(verification_token=token)
+        except User.DoesNotExist:
+            return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # ✅ Ensure token_expiry is set before comparing
+        if user.verification_token_expiry is None or user.verification_token_expiry < now():
+            return Response({"error": "Token has expired or is invalid."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # ✅ Activate user
+        user.is_active = True
+        user.is_verified = True
+        user.verification_token = None  # Remove token after verification
+        user.verification_token_expiry = None
         user.save()
 
         return Response({"message": "Your account has been activated successfully!"}, status=status.HTTP_200_OK)

@@ -69,7 +69,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     # Email Verification Fields
-    verification_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    verification_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, null=True)
+    verification_token_expiry = models.DateTimeField(blank=True, null=True)
     reset_password_token = models.UUIDField(unique=False, editable=False, blank=True, null=True)
     reset_token_expiry = models.DateTimeField(blank=True, null=True)
 
@@ -77,7 +78,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Generate a valid datetime object for token expiration"""
         return now() + timedelta(days=1)
 
-    token_expiry = models.DateTimeField(default=get_token_expiry)
+
 
     # Timestamps
     last_login = models.DateTimeField(blank=True, null=True)
@@ -91,7 +92,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["first_name", "last_name", "phone_number", "phone_country_code"]
 
     def __str__(self):
-        return f"{self.email} ({self.subscription_plan})"
+        return f"{self.email} ({'Verified' if self.is_verified else 'Not Verified'})"
+
+    def generate_verification_token(self):
+        """Generate a unique token for email verification"""
+        self.verification_token = uuid.uuid4()
+        self.verification_token_expiry = now() + timedelta(hours=24)
+        self.save()
+
+    def clear_verification_token(self):
+        """Clear the verification token after successful verification"""
+        self.verification_token = None
+        self.verification_token_expiry = None  
+        self.is_active = True
+        self.is_verified = True
+        self.save()
 
 
 class Address(models.Model):
