@@ -2,16 +2,17 @@
 
 import React from "react";
 import {
-  BadgeCheck,
   LogOut,
   Sparkles,
   Moon,
   Sun,
-  MailIcon,
   Search,
   Handshake,
   LifeBuoy,
   Settings,
+  User,
+  MessageSquare,
+  Heart
 } from "lucide-react";
 
 import { useRouter } from "next/navigation"; // Next.js router for redirection
@@ -35,7 +36,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
 
 /**
  * NavUser Component
@@ -76,6 +76,8 @@ export function NavUser({ user }) {
     }
   };
 
+  console.log("user", user);
+  
   return (
     <SidebarMenu className="flex justify-end">
       <SidebarMenuItem className="relative">
@@ -88,7 +90,7 @@ export function NavUser({ user }) {
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">
-                  {user.firstName ? user.firstName.slice(0, 2).toUpperCase() : ""}
+                  {user.last_name && user.first_name  ? user.first_name[0] + user.last_name[0]  : ""}
                 </AvatarFallback>
               </Avatar>
 
@@ -105,10 +107,10 @@ export function NavUser({ user }) {
               <div className="flex items-center gap-2 px-3 py-2 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{user.first_name[0]}{user.last_name[0]}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate font-semibold">{user.first_name} {user.last_name}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
@@ -133,12 +135,20 @@ export function NavUser({ user }) {
                 Explorer
               </DropdownMenuItem>
               <DropdownMenuItem className="font-semibold">
-                <MailIcon className="mr-2 h-4 w-4" />
+                <Heart className="mr-2 h-4 w-4" />
+                Suivis
+              </DropdownMenuItem>
+              <DropdownMenuItem className="font-semibold">
+                <MessageSquare className="mr-2 h-4 w-4" />
                 Messsages
               </DropdownMenuItem>
               <DropdownMenuItem className="font-semibold">
                 <Handshake className="mr-2 h-4 w-4" />
                 Collaborations
+              </DropdownMenuItem>
+              <DropdownMenuItem className="font-semibold">
+                <User className="mr-2 h-4 w-4" />
+                Profile
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -164,7 +174,7 @@ export function NavUser({ user }) {
             {/* Help Center */}
             <DropdownMenuItem>
               <LifeBuoy className="mr-2 h-4 w-4" />
-              Centre d'aide
+              Centre d&apos;aide
             </DropdownMenuItem>
             <DropdownMenuSeparator />
 

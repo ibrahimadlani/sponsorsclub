@@ -13,7 +13,8 @@ from .views import (
     UserListAPIView,
     RetrieveAPIView,
     ResetPasswordView,
-    ResetPasswordConfirmView
+    ResetPasswordConfirmView,
+    MyTokenObtainPairView,
 )
 
 urlpatterns = [
@@ -25,7 +26,7 @@ urlpatterns = [
     ),
 
     # Auth Endpoints
-    path("auth/login/", TokenObtainPairView.as_view(), name="auth-login"),
+    path("auth/login/", MyTokenObtainPairView.as_view(), name="auth-login"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="auth-refresh"),
     path("auth/register/", UserCreateAPIView.as_view(), name="auth-register"),
     path("auth/me/", RetrieveAPIView.as_view(), name="auth-me"),

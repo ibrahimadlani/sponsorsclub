@@ -63,7 +63,7 @@ export function LoginForm({ className, ...props }) {
       const response = await login(data.email, data.password);
       toast.success("Connexion réussie !");
       console.log("Login Successful:", response);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       const code = error.message || "UNKNOWN_ERROR";
       toast.error(errorMessages[code] || "Erreur inconnue");
@@ -193,16 +193,16 @@ export function LoginForm({ className, ...props }) {
       </Card>
 
       <div className="text-center text-sm">
-        Vous n'avez pas d'identifiants?{" "}
+        Vous n&apos;avez pas d&apos;identifiants?{" "}
         <a href="/register" className="underline underline-offset-4">
-          S'inscrire ici
+          S&apos;inscrire ici
         </a>
       </div>
 
       <div className="text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 ">
         En vous connectant, vous confirmez avoir lu et accepté nos{" "}
         <a href="/terms-of-service" className="hover:text-primary">
-          Conditions Générales d’Utilisation
+          Conditions Générales d&apos;Utilisation
         </a>{" "}
         ainsi que notre{" "}
         <a href="/privacy-policy" className="hover:text-primary">

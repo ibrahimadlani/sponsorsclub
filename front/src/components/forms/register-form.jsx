@@ -106,7 +106,7 @@ export function RegisterForm({ className, ...props }) {
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Créer un compte</CardTitle>
-          <CardDescription>S'inscrire avec Apple ou Google</CardDescription>
+          <CardDescription>S&apos;inscrire avec Apple ou Google</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -124,7 +124,7 @@ export function RegisterForm({ className, ...props }) {
                       fill="currentColor"
                     />
                   </svg>
-                  S'inscrire avec Apple
+                  S&apos;inscrire avec Apple
                 </Button>
                 <Button variant="outline" className="w-full">
                   {/* Bouton d'inscription avec Google */}
@@ -138,13 +138,13 @@ export function RegisterForm({ className, ...props }) {
                       fill="currentColor"
                     />
                   </svg>
-                  S'inscrire avec Google
+                  S&apos;inscrire avec Google
                 </Button>
               </div>
 
               <div className="relative text-center text-sm mb-6 after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                  Ou s'inscrire ici
+                  Ou s&apos;inscrire ici
                 </span>
               </div>
             </div>
@@ -269,7 +269,7 @@ export function RegisterForm({ className, ...props }) {
       <div className="text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 ">
         En vous inscrivant, vous confirmez avoir lu et accepté nos{" "}
         <a href="/terms-of-service" className="hover:text-primary">
-          Conditions Générales d’Utilisation
+          Conditions Générales d&apos;Utilisation
         </a>{" "}
         ainsi que notre{" "}
         <a href="/privacy-policy" className="hover:text-primary">

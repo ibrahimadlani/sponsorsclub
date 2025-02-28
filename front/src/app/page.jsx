@@ -1,274 +1,372 @@
 "use client";
 
+// React Imports
+import { useState, useEffect, useContext } from "react";
+
+// Next.js Imports
 import Link from "next/link";
+import Image from "next/image";
+
+// Third-Party Library Imports
 import {
   Globe,
   BadgeCheck,
   Euro,
   ChevronDown,
   Search,
-  Mail,
   Handshake,
-  UserCircle,
   MessageSquare,
   Heart,
   User,
-  Bell,
-  Moon,
-  Sun,
   Instagram,
   Facebook,
   Youtube,
-
+  MapIcon,
+  ClipboardPen,
+  AlignJustify,
 } from "lucide-react";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-
-import { handleScroll } from "@/lib/utils";
-
-import { CardContent } from "@/components/ui/card";
+// UI Components
+import { Button } from "@/components/ui/button";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Logo from "@/components/ui/logo";
-import BarChart from "@/components/bar-chart";
-import FollowerGrowthChart from "@/components/bar-chart";
+import Skeleton from "@/components/skeleton-item";
+
+// Navigation Components
 import { NavUser } from "@/components/nav-user";
 import { NavMenu } from "@/components/nav-bar";
-import AthletesTabs from "@/components/athletes-tabs";
-import Skeleton from "@/components/skeleton-item";
-import { useState, useEffect } from "react";
 
-// Données utilisateur
-const data = {
-  user: {
-    name: "Ibrahim Adlani",
-    email: "ibrahim@adlani.com",
-    avatar: "/images/ski-1.jpg",
-  },
-};
+// Charts
+import FollowerGrowthChart from "@/components/bar-chart";
+import RadarChartComponent from "@/components/radar-chart";
+
+// Context
+import AuthContext from "@/context/AuthContext";
+
+// Utility Functions
+import { handleScroll, formatNumber } from "@/lib/utils";
+
 
 // Données JSON des athlètes avec leur URL de profil
 const itemsData = [
   {
     id: 1,
-    name: "Jean Skieur",
-    location: "Chamonix, France",
-    category: "⛷️ Ski Freestyle",
-    price: "675",
+    name: "Teddy Riner",
+    location: "Paris, France",
+    category: "🥋 Judo",
+    price: "20 000",
     isCarousel: true,
-    profileUrl: "/athletes/jean-skieur",
+    profileUrl: "/athletes/teddy-riner",
     certified: true,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-3.jpg"],
-    bio: "Champion national de ski freestyle, 2 podiums en Coupe d'Europe. En quête de sponsors pour les X Games.",
-    subscribers: { vb: 15000, instagram: 52000, youtube: 78000 },
-    level: "PRO",
+    images: ["/images/teddy-1.jpg", "/images/teddy-2.jpg", "/images/teddy-3.jpg"],
+    bio: "Triple champion olympique, 11 fois champion du monde. Un des plus grands judokas de l’histoire.",
+    subscribers: { vb: 200000, instagram: 800000, youtube: 150000 },
   },
   {
     id: 2,
-    name: "Sophie Martin",
-    location: "Lyon, France",
-    category: "🎾 Tennis",
-    price: "850",
+    name: "Victor Wembanyama",
+    location: "Paris, France",
+    category: "🏀 Basketball",
+    price: "18 500",
     isCarousel: true,
-    profileUrl: "/athletes/sophie-martin",
+    profileUrl: "/athletes/victor-wembanyama",
     certified: true,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
-    bio: "Joueuse WTA classée top 300, finaliste d'un ITF 25k. Recherche sponsors pour la saison internationale.",
-    subscribers: { vb: 12000, instagram: 60000, youtube: 35000 },
-    level: "HAUT NIVEAU",
+    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-3.jpg"],
+    bio: "Phénomène du basket français et star de la NBA. L’un des plus grands espoirs du basket mondial.",
+    subscribers: { vb: 250000, instagram: 3_500_000, youtube: 500000 },
   },
   {
     id: 3,
-    name: "Lucas Durand",
-    location: "Marseille, France",
-    category: "🏀 Basketball",
-    price: "720",
+    name: "Kylian Mbappé",
+    location: "Paris, France",
+    category: "⚽ Football",
+    price: "50 000",
     isCarousel: true,
-    profileUrl: "/athletes/lucas-durand",
+    profileUrl: "/athletes/kylian-mbappe",
     certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
-    bio: "Meneur de jeu en Pro B, ancien espoir NBA. En route vers l'EuroLeague.",
-    subscribers: { vb: 21000, instagram: 80000, youtube: 50000 },
-    level: "PRO",
+    images: ["/images/mbappe-1.jpg", "/images/mbappe-2.jpg", "/images/mbappe-3.jpg"],
+    bio: "Champion du monde 2018, joueur du Real Madrid, leader de l’équipe de France.",
+    subscribers: { vb: 1_000_000, instagram: 120_000_000, youtube: 2_000_000 },
   },
   {
     id: 4,
-    name: "Emma Leclerc",
-    location: "Nice, France",
-    category: "🏊‍♀️ Swimming",
-    price: "900",
+    name: "Léon Marchand",
+    location: "Toulouse, France",
+    category: "🏊‍♂️ Natation",
+    price: "10 500",
     isCarousel: true,
-    profileUrl: "/athletes/emma-leclerc",
-     certified: true,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-1.jpg"],
-    bio: "Spécialiste du 200m nage libre, membre de l'équipe de France juniors.",
+    profileUrl: "/athletes/leon-marchand",
+    certified: true,
+    images: ["/images/leon-1.jpg", "/images/leon-2.jpg", "/images/leon-3.jpg"],
+    bio: "Champion du monde du 400m 4 nages et espoir olympique français.",
+    subscribers: { vb: 35000, instagram: 1_200_000, youtube: 180000 },
+  },
+  {
+    id: 5,
+    name: "Antoine Dupont",
+    location: "Toulouse, France",
+    category: "🏉 Rugby",
+    price: "15 000",
+    isCarousel: true,
+    profileUrl: "/athletes/antoine-dupont",
+    certified: true,
+    images: ["/images/dupont-1.jpg", "/images/dupont-2.jpg", "/images/dupont-3.jpg"],
+    bio: "Capitaine du XV de France, meilleur joueur du monde en 2021.",
+    subscribers: { vb: 80000, instagram: 1_300_000, youtube: 400000 },
+  },
+  {
+    id: 6,
+    name: "Clarisse Agbegnenou",
+    location: "Paris, France",
+    category: "🥋 Judo",
+    price: "9 000",
+    isCarousel: true,
+    profileUrl: "/athletes/clarisse-agbegnenou",
+    certified: true,
+    images: ["/images/clarisse-1.jpg", "/images/clarisse-2.jpg", "/images/clarisse-3.jpg"],
+    bio: "Double championne olympique et six fois championne du monde de judo.",
+    subscribers: { vb: 60000, instagram: 500000, youtube: 100000 },
+  },
+  {
+    id: 7,
+    name: "Alizé Cornet",
+    location: "Nice, France",
+    category: "🎾 Tennis",
+    price: "7 500",
+    isCarousel: true,
+    profileUrl: "/athletes/alize-cornet",
+    certified: true,
+    images: ["/images/alize-1.jpg", "/images/alize-2.jpg", "/images/alize-3.jpg"],
+    bio: "Joueuse emblématique du tennis français, avec plus de 60 participations en Grand Chelem.",
+    subscribers: { vb: 30000, instagram: 200000, youtube: 80000 },
+  },
+  {
+    id: 8,
+    name: "Romain Bardet",
+    location: "Clermont-Ferrand, France",
+    category: "🚴‍♂️ Cyclisme",
+    price: "6 000",
+    isCarousel: true,
+    profileUrl: "/athletes/romain-bardet",
+    certified: true,
+    images: ["/images/romain-1.jpg", "/images/romain-2.jpg", "/images/romain-3.jpg"],
+    bio: "Meilleur grimpeur français, multiple vainqueur d’étape sur le Tour de France.",
+    subscribers: { vb: 50000, instagram: 300000, youtube: 120000 },
+  },
+  {
+    id: 9,
+    name: "Estelle Mossely",
+    location: "Paris, France",
+    category: "🥊 Boxe",
+    price: "8 500",
+    isCarousel: true,
+    profileUrl: "/athletes/estelle-mossely",
+    certified: true,
+    images: ["/images/estelle-1.jpg", "/images/estelle-2.jpg", "/images/estelle-3.jpg"],
+    bio: "Championne olympique et multiple championne du monde de boxe.",
+    subscribers: { vb: 70000, instagram: 400000, youtube: 100000 },
+  },
+  {
+    id: 10,
+    name: "Justine Braisaz-Bouchet",
+    location: "Albertville, France",
+    category: "🎿 Biathlon",
+    price: "5 500",
+    isCarousel: true,
+    profileUrl: "/athletes/justine-braisaz",
+    certified: true,
+    images: ["/images/justine-1.jpg", "/images/justine-2.jpg", "/images/justine-3.jpg"],
+    bio: "Championne olympique et étoile montante du biathlon français.",
+    subscribers: { vb: 40000, instagram: 250000, youtube: 75000 },
+  },
+  {
+    id: 11,
+    name: "Thibaut Pinot",
+    location: "Besançon, France",
+    category: "🚴‍♂️ Cyclisme",
+    price: "7 200",
+    isCarousel: true,
+    profileUrl: "/athletes/thibaut-pinot",
+    certified: true,
+    images: ["/images/thibaut-1.jpg", "/images/thibaut-2.jpg", "/images/thibaut-3.jpg"],
+    bio: "Ancien vainqueur du Tourmalet, l’un des cyclistes français les plus appréciés.",
+    subscribers: { vb: 60000, instagram: 700000, youtube: 180000 },
+  },
+  {
+    id: 12,
+    name: "Kevin Mayer",
+    location: "Montpellier, France",
+    category: "🏃‍♂️ Décathlon",
+    price: "9 500",
+    isCarousel: true,
+    profileUrl: "/athletes/kevin-mayer",
+    certified: true,
+    images: ["/images/kevin-1.jpg", "/images/kevin-2.jpg", "/images/kevin-3.jpg"],
+    bio: "Recordman du monde du décathlon, double vice-champion olympique.",
+    subscribers: { vb: 75000, instagram: 500000, youtube: 120000 },
+  },
+  {
+    id: 13,
+    name: "Earvin Ngapeth",
+    location: "Poitiers, France",
+    category: "🏐 Volley-ball",
+    price: "8 000",
+    isCarousel: true,
+    profileUrl: "/athletes/earvin-ngapeth",
+    certified: true,
+    images: ["/images/earvin-1.jpg", "/images/earvin-2.jpg", "/images/earvin-3.jpg"],
+    bio: "Star du volley français, champion olympique et joueur emblématique.",
+    subscribers: { vb: 90000, instagram: 400000, youtube: 110000 },
+  },
+  {
+    id: 14,
+    name: "Perrine Laffont",
+    location: "Toulouse, France",
+    category: "⛷ Ski",
+    price: "950",
+    isCarousel: true,
+    profileUrl: "/athletes/perrine-laffont",
+    certified: true,
+    images: ["/images/perrine-1.jpg", "/images/perrine-2.jpg", "/images/perrine-1.jpg"],
+    bio: "Championne olympique de ski de bosses, en route pour Los Angles 2028.",
     subscribers: { vb: 8000, instagram: 34000, youtube: 20000 },
     level: "SEMI PRO",
   },
   {
-    id: 5,
-    name: "Nathan Giraud",
+    id: 16,
+    name: "Kylian Mbappé",
     location: "Paris, France",
     category: "⚽ Football",
-    price: "1050",
+    price: "20 000",
     isCarousel: true,
-    profileUrl: "/athletes/nathan-giraud",
+    profileUrl: "/athletes/kylian-mbappe",
     certified: true,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
-    bio: "Milieu offensif en Ligue 2, prêt pour le grand saut en Ligue 1.",
-    subscribers: { vb: 33000, instagram: 92000, youtube: 41000 },
-    level: "PRO",
+    images: ["/images/mbappe-1.jpg", "/images/mbappe-2.jpg", "/images/mbappe-3.jpg"],
+    bio: "Attaquant vedette du Paris Saint-Germain et de l'équipe de France, champion du monde 2018.",
+    subscribers: { vb: 50000, instagram: 70000000, youtube: 1500000 },
   },
   {
-    id: 6,
-    name: "Chloé Lambert",
-    location: "Bordeaux, France",
-    category: "🚴‍♀️ Cycling",
-    price: "780",
-    isCarousel: true,
-    profileUrl: "/athletes/chloe-lambert",
-    certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
-    bio: "Championne U23 en contre-la-montre, ambitionne de rejoindre une équipe WorldTour.",
-    subscribers: { vb: 5000, instagram: 25000, youtube: 12000 },
-    level: "HAUT NIVEAU",
-  },
-  {
-    id: 7,
-    name: "Hugo Petit",
-    location: "Toulouse, France",
-    category: "🏉 Rugby",
-    price: "970",
-    isCarousel: true,
-    profileUrl: "/athletes/hugo-petit",
-    certified: true,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-3.jpg"],
-    bio: "Pilier en Top 14, 3 sélections en équipe nationale espoir.",
-    subscribers: { vb: 14000, instagram: 49000, youtube: 29000 },
-    level: "PRO",
-  },
-  {
-    id: 8,
-    name: "Camille Roche",
-    location: "Strasbourg, France",
-    category: "🏃‍♂️ Athletics",
-    price: "600",
-    isCarousel: true,
-    profileUrl: "/athletes/camille-roche",
-     certified: true,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
-    bio: "Finaliste aux championnats nationaux du 800m, rêve des JO 2028.",
-    subscribers: { vb: 7000, instagram: 32000, youtube: 18000 },
-    level: "SEMI PRO",
-  },
-  {
-    id: 9,
-    name: "Maxime Dupont",
-    location: "Grenoble, France",
-    category: "🏂 Snowboarding",
-    price: "820",
-    isCarousel: true,
-    profileUrl: "/athletes/maxime-dupont",
-    certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
-    bio: "Freestyler, top 10 aux Championnats d'Europe de big air.",
-    subscribers: { vb: 11000, instagram: 56000, youtube: 37000 },
-    level: "HAUT NIVEAU",
-  },
-  {
-    id: 10,
-    name: "Léa Fontaine",
-    location: "Rennes, France",
-    category: "🤸‍♀️ Gymnastics",
-    price: "730",
-    isCarousel: true,
-    profileUrl: "/athletes/lea-fontaine",
-     certified: true,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-1.jpg"],
-    bio: "Championne nationale en poutre, en route pour les championnats européens.",
-    subscribers: { vb: 9500, instagram: 48000, youtube: 26000 },
-    level: "HAUT NIVEAU",
-  },
-  {
-    id: 11,
-    name: "Antoine Leroy",
-    location: "Dijon, France",
+    id: 17,
+    name: "Clarisse Agbegnenou",
+    location: "Paris, France",
     category: "🥋 Judo",
-    price: "880",
+    price: "12 000",
     isCarousel: true,
-    profileUrl: "/athletes/antoine-leroy",
+    profileUrl: "/athletes/clarisse-agbegnenou",
     certified: true,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
-    bio: "Médaille de bronze aux championnats d’Europe juniors, rêve des Jeux Olympiques.",
-    subscribers: { vb: 10500, instagram: 51000, youtube: 29000 },
-    level: "HAUT NIVEAU",
+    images: ["/images/clarisse-1.jpg", "/images/clarisse-2.jpg", "/images/clarisse-3.jpg"],
+    bio: "Quintuple championne du monde et double championne olympique en judo.",
+    subscribers: { vb: 15000, instagram: 300000, youtube: 50000 },
   },
   {
-    id: 12,
-    name: "Sophie Dufresne",
+    id: 18,
+    name: "Kevin Mayer",
     location: "Montpellier, France",
-    category: "🤾‍♀️ Handball",
-    price: "920",
+    category: "🏃‍♂️ Athlétisme",
+    price: "10 500",
     isCarousel: true,
-    profileUrl: "/athletes/sophie-dufresne",
+    profileUrl: "/athletes/kevin-mayer",
     certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
-    bio: "Ailière droite en D1 féminine, ex-internationale U20, en quête de sponsors.",
-    subscribers: { vb: 13000, instagram: 57000, youtube: 32000 },
-    level: "PRO",
+    images: ["/images/mayer-1.jpg", "/images/mayer-2.jpg", "/images/mayer-3.jpg"],
+    bio: "Recordman du monde du décathlon et double médaillé d'argent olympique.",
+    subscribers: { vb: 12000, instagram: 250000, youtube: 80000 },
   },
   {
-    id: 13,
-    name: "Julien Morel",
+    id: 19,
+    name: "Caroline Garcia",
+    location: "Lyon, France",
+    category: "🎾 Tennis",
+    price: "9 800",
+    isCarousel: true,
+    profileUrl: "/athletes/caroline-garcia",
+    certified: true,
+    images: ["/images/garcia-1.jpg", "/images/garcia-2.jpg", "/images/garcia-3.jpg"],
+    bio: "Joueuse de tennis professionnelle, vainqueure de plusieurs titres WTA en simple et double.",
+    subscribers: { vb: 11000, instagram: 200000, youtube: 60000 },
+  },
+  {
+    id: 20,
+    name: "Florent Manaudou",
     location: "Marseille, France",
-    category: "🤿 Diving",
-    price: "845",
+    category: "🏊‍♂️ Natation",
+    price: "8 500",
     isCarousel: true,
-    profileUrl: "/athletes/julien-morel",
+    profileUrl: "/athletes/florent-manaudou",
     certified: true,
-    images: ["/images/ski-1.jpg", "/images/ski-2.jpg", "/images/ski-1.jpg"],
-    bio: "Finaliste aux Championnats d'Europe, spécialiste du 10m plateforme.",
-    subscribers: { vb: 8900, instagram: 41000, youtube: 22000 },
-    level: "HAUT NIVEAU",
+    images: ["/images/manaudou-1.jpg", "/images/manaudou-2.jpg", "/images/manaudou-3.jpg"],
+    bio: "Champion olympique du 50m nage libre en 2012 et multiple médaillé mondial.",
+    subscribers: { vb: 10000, instagram: 300000, youtube: 70000 },
   },
   {
-    id: 14,
-    name: "Élodie Richard",
-    location: "Toulon, France",
-    category: "🏄‍♀️ Surfing",
-    price: "700",
+    id: 21,
+    name: "Pauline Ferrand-Prévot",
+    location: "Reims, France",
+    category: "🚴‍♀️ Cyclisme",
+    price: "7 200",
     isCarousel: true,
-    profileUrl: "/athletes/elodie-richard",
-     certified: true,
-    images: ["/images/nadal-1.jpg", "/images/nadal-2.jpg", "/images/nadal-1.jpg"],
-    bio: "Top 10 au circuit européen WSL junior, cherche sponsors pour saison mondiale.",
-    subscribers: { vb: 11200, instagram: 49000, youtube: 35000 },
-    level: "SEMI PRO",
+    profileUrl: "/athletes/pauline-ferrand-prevot",
+    certified: true,
+    images: ["/images/pauline-1.jpg", "/images/pauline-2.jpg", "/images/pauline-3.jpg"],
+    bio: "Multiple championne du monde en cyclisme sur route, VTT et cyclo-cross.",
+    subscribers: { vb: 9000, instagram: 150000, youtube: 40000 },
   },
   {
-    id: 15,
-    name: "Thomas Garnier",
-    location: "Lille, France",
-    category: "🤺 Fencing",
-    price: "980",
+    id: 22,
+    name: "Renaud Lavillenie",
+    location: "Clermont-Ferrand, France",
+    category: "🏃‍♂️ Athlétisme",
+    price: "9 000",
     isCarousel: true,
-    profileUrl: "/athletes/thomas-garnier",
-     certified: true,
-    images: ["/images/wemby-1.jpg", "/images/wemby-2.jpg", "/images/wemby-1.jpg"],
-    bio: "Vice-champion national, objectif : qualification aux championnats du monde seniors.",
-    subscribers: { vb: 12500, instagram: 54000, youtube: 31000 },
-    level: "HAUT NIVEAU",
+    profileUrl: "/athletes/renaud-lavillenie",
+    certified: true,
+    images: ["/images/lavillenie-1.jpg", "/images/lavillenie-2.jpg", "/images/lavillenie-3.jpg"],
+    bio: "Champion olympique 2012 et ancien recordman du monde du saut à la perche.",
+    subscribers: { vb: 9500, instagram: 220000, youtube: 50000 },
   },
+  {
+    id: 23,
+    name: "Marie-José Pérec",
+    location: "Basse-Terre, Guadeloupe",
+    category: "🏃‍♀️ Athlétisme",
+    price: "8 000",
+    isCarousel: true,
+    profileUrl: "/athletes/marie-jose-perec",
+    certified: true,
+    images: ["/images/perec-1.jpg", "/images/perec-2.jpg", "/images/perec-3.jpg"],
+    bio: "Triple championne olympique sur 400m et 200m.",
+    subscribers: { vb: 8500, instagram: 180000, youtube: 45000 },
+  },
+  {
+    id: 24,
+    name: "Tony Yoka",
+    location: "Paris, France",
+    category: "🥊 Boxe",
+    price: "10 000",
+    isCarousel: true,
+    profileUrl: "/athletes/tony-yoka",
+    certified: true,
+    images: ["/images/yoka-1.jpg", "/images/yoka-2.jpg", "/images/yoka-3.jpg"],
+    bio: "Champion olympique des poids super-lourds en 2016, boxeur professionnel invaincu.",
+    subscribers: { vb: 11500, instagram: 250000, youtube: 90000 },
+  },
+  {
+    id: 25,
+    name: "Estelle Mossely",
+    location: "Paris, France",
+    category: "🥊 Boxe",
+    price: "9 500",
+    isCarousel: true,
+    profileUrl: "/athletes/estelle-mossely",
+    certified: true,
+    images: ["/images/mossely-1.jpg", "/images/mossely-2.jpg", "/images/mossely-3.jpg"],
+    bio: "Championne olympique des poids légers en 2016, championne du monde WBA.",
+    subscribers: { vb: 10500, instagram: 200000, youtube: 75000 },
+  },
+
+  
 ];
+
 // Composant pour afficher chaque item
 const ItemComponent = ({ item }) => {
 
@@ -276,16 +374,13 @@ const ItemComponent = ({ item }) => {
     <div className="rounded-xl w-full group relative block transition-transform transform z-0">
       {/* Badge de certification */}
       {item.certified && (
-        <span className="absolute top-4 left-4 flex items-center gap-1 text-black bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
+        <span className="absolute top-4 right-4 flex items-center gap-1 text-black bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
           {item.category}
         </span>
       )}
-      <span className="absolute top-4 right-4 flex items-center gap-1 text-white bg-pink-600 text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
-        <BadgeCheck className="w-4 h-4" strokeWidth={2} />
-        PRO
-      </span>
+
       {item.isCarousel ? (
-        <div className="relative w-full h-64 rounded-xl overflow-hidden">
+        <div className="relative w-full h-64 rounded-xl border overflow-hidden">
           <Carousel className="w-full h-full z-0">
             <Link href={item.profileUrl}>
               <CarouselContent className="h-full z-20">
@@ -294,9 +389,11 @@ const ItemComponent = ({ item }) => {
                     key={index}
                     className="flex items-center justify-center h-full w-full"
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`Slide ${index + 1}`}
+                      width={500}
+                      height={300}
                       className="w-full h-full object-cover object-center mx-auto"
                     />
                   </CarouselItem>
@@ -305,12 +402,15 @@ const ItemComponent = ({ item }) => {
                 <CarouselItem className="flex items-center justify-center h-full w-full">
                   <FollowerGrowthChart />
                 </CarouselItem>
+                <CarouselItem className="flex items-center justify-center h-full w-full">
+                  <RadarChartComponent />
+                </CarouselItem>
               </CarouselContent>
             </Link>
 
             {/* Hide Buttons on Mobile */}
-            <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 hidden md:flex" />
-            <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 hidden md:flex" />
+            <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration certified: true, z-30 hidden md:flex" />
+            <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration certified: true, z-30 hidden md:flex" />
           </Carousel>
         </div>
       ) : (
@@ -320,25 +420,31 @@ const ItemComponent = ({ item }) => {
       {/* Informations de l'item */}
       <div className="flex flex-col mt-3">
         <div className="">
-          <div className="flex items-center gap-2">
-          <h1 className="font-medium text-base leading-2">{item.name}</h1>
-          <span className="absolute top-4 right-4 flex items-center gap-1 text-white bg-pink-600 text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
-            <BadgeCheck className="w-4 h-4" strokeWidth={2} />
-            {item.level}
-          </span>
-          </div>
-          <p className="font-normal text-sm dark:text-white/50 text-black/50 leading-5">
-            <span className="font-medium">{item.location}</span><span className="font-bold mx-2">·</span><span>{item.bio}</span>
-          </p>
-        </div>
-        <p className="font-medium text-sm dark:text-white/50 text-black/50 leading-5 flex  items-center gap-2 my-2 ">
-          <div className="flex items-center"><Instagram className="h-5 w-5 me-1" strokeWidth={1.5} />{item.subscribers.instagram}</div>
-          <span className="font-bold">·</span>
-          <div className="flex items-center"><Facebook className="h-5 w-5 me-1" strokeWidth={1.5} />{item.subscribers.vb}</div>
-          <span className="font-bold">·</span>
-          <div className="flex items-center"><Youtube className="h-5 w-5 me-1" strokeWidth={1.5} />{item.subscribers.youtube}</div>
-        </p>
+          <h1 className="font-medium text-base leading-2 flex justify-start items-center gap-2">{item.name}
+            {item.level ? (
+              <span className="right-4 flex items-center gap-1 text-white bg-pink-600 text-xs font-semibold  py-0.5 pl-0.5 pr-1.5  shadow z-50 rounded-full">
+                <BadgeCheck className="w-4 h-4" strokeWidth={2} />
+                {item.level}
+              </span>
+            ) : ("")}
+          </h1>
 
+
+          <p className="font-normal text-sm dark:text-white/50 text-black/50 leading-5">
+            <span className="font-medium">{item.location}</span>
+            <span className="font-bold mx-2">·</span>
+            <span>{item.bio}</span>
+          </p>
+
+
+        </div>
+        <div className="font-medium text-sm dark:text-white/50 text-black/50 leading-5 flex  items-center gap-2 my-2 ">
+          <div className="flex items-center"><Instagram className="h-5 w-5 me-1" strokeWidth={1.5} />{formatNumber(item.subscribers.instagram)}</div>
+          <span className="font-bold">·</span>
+          <div className="flex items-center"><Facebook className="h-5 w-5 me-1" strokeWidth={1.5} />{formatNumber(item.subscribers.vb)}</div>
+          <span className="font-bold">·</span>
+          <div className="flex items-center"><Youtube className="h-5 w-5 me-1" strokeWidth={1.5} />{formatNumber(item.subscribers.youtube)}</div>
+        </div>
         <p className="font-normal text-sm leading-5">
           À partir de{" "}
           <span className="font-medium text-base">{item.price}</span>€
@@ -350,6 +456,7 @@ const ItemComponent = ({ item }) => {
 
 export default function Page() {
 
+  const { user } = useContext(AuthContext);
 
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
@@ -368,6 +475,7 @@ export default function Page() {
     const onScroll = () => handleScroll(setIsHidden, lastScrollY, setLastScrollY);
 
     window.addEventListener("scroll", onScroll);
+
     return () => window.removeEventListener("scroll", onScroll);
   }, [lastScrollY]);
 
@@ -375,7 +483,7 @@ export default function Page() {
     <SidebarProvider>
       <SidebarInset>
         {/* HEADER */}
-        <header className="sticky top-0 z-50 w-full bg-background text-center border-b px-6 md:px-0">
+        <header className="sticky top-0 z-50 w-full bg-background text-center border-b px-6 md:px-0 shadow-lg">
           <div className="relative flex items-center justify-center min-h-[80px]">
             {/* Logo (positionné à gauche) */}
             <div className="absolute left-6 top-6 md:left-12 2xl:left-24 hidden md:block">
@@ -393,36 +501,35 @@ export default function Page() {
 
             </div>
 
-            {/* Boutons de navigation et options utilisateur (Desktop Only) */}
-            <div className="absolute flex right-0 top-4 md:right-12 2xl:right-24 gap-1 items-center ">
-              {/* <Link href="/notifications" className="ml-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-        <Bell className="w-6 h-6 text-gray-700 dark:text-white" />
-      </Link> */}
-              <Link href="/search" className="p-3 hover:bg-muted/50 rounded-full text-sm font-semibold hidden md:flex">
-                <p className="text-nowrap">Passez <span className="text-pink-500">Premium</span></p>
-              </Link>
-              <Link href="/search" className="p-3 hover:bg-muted/50 rounded-full !hidden md:!flex">
-                <Globe className="w-4 h-4" />
-              </Link>
-              <NavUser user={data.user} />
+            {/* User Authentication Controls (Right side) */}
+              {user ? (
+                <div className="absolute flex right-0 top-4 md:right-12 2xl:right-24 gap-1 items-center">
+                <NavUser user={user} />
+                </div>
+              ) : (
+                <div className="absolute flex right-0 top-5.5 md:right-12 2xl:right-24 gap-1 items-center">
+                <Link href="/login" className="p-3 hover:bg-muted/50 rounded-full text-sm font-semibold">
+                  <AlignJustify className="w-4 h-4" />
+                  </Link>
+                </div>
+              )}
             </div>
-          </div>
         </header>
 
         {/* GRID des items */}
         {/* <AthletesTabs className="w-full"/> */}
         <div className="flex flex-1 flex-col gap-4 px-6 md:px-12 2xl:px-24 py-3">
-          <div className="grid gap-x-6 gap-y-12 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
+          <div className="grid mb-36 gap-x-6 gap-y-12 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
             {loading
-              ? Array(10).fill(0).map((_, index) => <Skeleton key={index} />) // ✅ Show Skeletons while loading
-              : items.map((item) => <ItemComponent key={item.id} item={item} />) // ✅ Render real data
+              ? Array(10).fill(0).map((_, index) => <Skeleton key={index} />)
+              : items.map((item) => <ItemComponent key={item.id} item={item} />)
             }
           </div>
         </div>
         <footer className="sticky bottom-0 w-full px-6 md:px-12 2xl:px-24 py-4 text-center border-t bg-background items-center justify-between text-sm hidden md:flex">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="">
-              &copy; {new Date().getFullYear()} <span className="font-semibold">SponsorsClub</span>
+              &copy; {new Date().getFullYear()} SponsorsClub
             </span>
             <span> · </span>
             <Link href="/privacy" className="hover:underline">
@@ -438,7 +545,7 @@ export default function Page() {
             </Link>
             <span> · </span>
             <Link href="/about" className="hover:underline">
-              Infos sur l'entreprise
+              Infos sur l&apos;entreprise
             </Link>
           </div>
           <div className="flex  items-center gap-2.5">
@@ -461,19 +568,32 @@ export default function Page() {
           </div>
         </footer>
         {/* FOOTER - version mobile */}
+        {/* ${isHidden ? "translate-y-24" : "translate-y-0"} */}
+        <div className="flex w-full justify-center">
+          <Button className={`fixed bottom-16 hidden md:flex  py-0 text-xs bg-foreground rounded-full text-background shadow-xl  items-center justify-center z-50  font-semibold  `}>
+
+            Afficher la carte
+            <MapIcon className="w-4 h-4" />
+          </Button>
+          <Button className={`transition-transform duration certified: true, ease-in-out fixed bottom-24 md:hidden py-0 text-xs bg-foreground rounded-full text-background shadow-xl flex items-center justify-center z-50  font-semibold ${isHidden ? "translate-y-[75px]" : "translate-y-0"} `}>
+
+            Afficher la carte
+            <MapIcon className="w-4 h-4" />
+          </Button>
+        </div>
         <footer
           className={`fixed bottom-5 left-2.5 right-2.5 w-auto max-w-[560px] mx-auto py-3 bg-background text-center border-t md:hidden px-7 
-  transition-transform duration-300 ease-in-out rounded-full shadow-xl  ${isHidden ? "translate-y-24" : "translate-y-0"
+  transition-transform duration certified: true, ease-in-out rounded-full shadow-xl  ${isHidden ? "translate-y-[100px]" : "translate-y-0"
             }`}
         >
           <div className="flex justify-between w-full">
             <Link href="/explorer" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] text-pink-500">
-              <Search className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
+              <Search className="w-6 h-6 stroke-[1.8]" strokeWidth={1.8} />
               <span className="text-[0.625rem] font-semibold">Explorer</span>
             </Link>
             <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
               <Heart className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Followed</span>
+              <span className="text-[0.625rem]">Suivis</span>
             </Link>
             <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
               <MessageSquare className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
@@ -486,6 +606,30 @@ export default function Page() {
             <Link href="/profile" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
               <User className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
               <span className="text-[0.625rem]">Profile</span>
+            </Link>
+          </div>
+        </footer>
+        <footer
+          className={`fixed bottom-5 left-2.5 right-2.5 w-auto max-w-[560px] mx-auto py-3 bg-background text-center border-t md:hidden px-7 
+          transition-transform ease-in-out rounded-full shadow-xl ${isHidden ? "translate-y-[100px]" : "translate-y-0"
+            }`}
+        >
+          <div className="flex justify-around w-full">
+            <Link href="/explorer" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] text-pink-500">
+              <Search className="w-6 h-6 stroke-[1.8]" />
+              <span className="text-[0.625rem] font-semibold">Explorer</span>
+            </Link>
+            <Link href="/favorites" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
+              <Heart className="w-6 h-6 stroke-[1.4]" />
+              <span className="text-[0.625rem]">Suivis</span>
+            </Link>
+            <Link href="/login" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
+              <User className="w-6 h-6 stroke-[1.4]" />
+              <span className="text-[0.625rem]">Connexion</span>
+            </Link>
+            <Link href="/login" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
+              <ClipboardPen className="w-6 h-6 stroke-[1.4]" />
+              <span className="text-[0.625rem]">Inscription</span>
             </Link>
           </div>
         </footer>

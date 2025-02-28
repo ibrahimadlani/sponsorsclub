@@ -1,34 +1,52 @@
 "use client";
 
 import { createContext, useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation"; // Ajout de usePathname pour détecter la route actuelle
+import { useRouter, usePathname } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 import { refreshAccessToken } from "@/lib/api";
+
 
 const AuthContext = createContext();
 
+export const isAuthenticated = (token) => {
+    if (!token) return false;
+
+    try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
+        return decoded.exp > currentTime; // True if token is still valid
+    } catch (error) {
+        console.error("Invalid token", error);
+        return false;
+    }
+};
+
 export const AuthProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(null);
+    const [user, setUser] = useState(null);
     const router = useRouter();
-    const pathname = usePathname(); // Obtenir la route actuelle
+    const pathname = usePathname();
 
     useEffect(() => {
         const storedToken = localStorage.getItem("accessToken");
 
         if (storedToken) {
-            setAccessToken(storedToken);
-
-            // 🚀 Bloquer l'accès aux pages d'auth si déjà connecté
-            if (["/login", "/register", "/reset-password", "/reset-password/confirm"].includes(pathname)) {
-                router.replace("/dashboard");
+            const isValid = isAuthenticated(storedToken);
+            if (isValid) {
+                setAccessToken(storedToken);
+                setUser(jwtDecode(storedToken)); // Extraire les infos du token
+            } else {
+                localStorage.removeItem("accessToken"); // Supprimer le token expiré
+                router.replace("/login");
             }
         } else {
-            // 🚀 Rediriger vers /login si l'utilisateur n'est pas connecté et essaie d'aller sur une page protégée
-            if (!["/login", "/register", "/reset-password", "/reset-password/confirm", "/", "/settings"].includes(pathname)) {
+            if (!["/","/login", "/register", "/reset-password", "/reset-password/confirm"].includes(pathname)) {
                 router.replace("/login");
             }
         }
-    }, [pathname]); // Exécuter l'effet lorsque la route change
+    }, [router, pathname]);
 
+    // Fonction pour rafraîchir le token et mettre à jour l'utilisateur
     const refreshAuth = async () => {
         try {
             const refreshToken = localStorage.getItem("refreshToken");
@@ -37,14 +55,17 @@ export const AuthProvider = ({ children }) => {
             const data = await refreshAccessToken(refreshToken);
             localStorage.setItem("accessToken", data.access);
             setAccessToken(data.access);
+            setUser(jwtDecode(data.access)); // Mettre à jour l'utilisateur
         } catch (error) {
             console.error("Token refresh failed");
-            router.replace("/login"); // Rediriger vers /login si l'auth échoue
+            router.replace("/login");
         }
     };
 
+    
+
     return (
-        <AuthContext.Provider value={{ accessToken, refreshAuth }}>
+        <AuthContext.Provider value={{ accessToken, user, refreshAuth }}>
             {children}
         </AuthContext.Provider>
     );

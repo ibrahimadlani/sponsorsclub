@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
-import { Map, Shield, User } from "lucide-react";
+import { Map, Shield, ShieldHalf, User } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -84,29 +84,26 @@ export function NavMenu() {
         <NavigationMenuItem>
           <Link href="/docs" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              <Shield className="h-4 w-4 me-2" />
+              <ShieldHalf className="h-4 w-4 me-2" />
               Équipes
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
 
         {/* Maps Dropdown Menu */}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger>
             <Map className="h-4 w-4 me-2" />
             Cartes
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              {/* Promotional Section */}
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <a
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                     href="/"
                   >
-                    {/* Uncomment the following line to use the logo icon */}
-                    {/* <Icons.logo className="h-6 w-6" /> */}
                     <div className="mb-2 mt-4 text-lg font-medium">
                       Cartes
                       <br />
@@ -120,7 +117,6 @@ export function NavMenu() {
                 </NavigationMenuLink>
               </li>
 
-              {/* List Items */}
               <ListItem href="/docs" title="Introduction">
                 Re-usable components built using Radix UI and Tailwind CSS.
               </ListItem>
@@ -132,7 +128,7 @@ export function NavMenu() {
               </ListItem>
             </ul>
           </NavigationMenuContent>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
       </NavigationMenuList>
     </NavigationMenu>
   );

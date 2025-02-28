@@ -74,8 +74,10 @@ const SettingsLayout = ({ children }) => {
               </div>
               <Separator className="my-6" />
               <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0 w-full">
-                <aside className="-mx-4 lg:w-1/5 ">
-                  <SidebarNav items={sidebarNavItems} className={"sticky top-10 max-h-screen overflow-y-auto"} />
+                <aside className="-mx-4 lg:w-1/5">
+                  <div className="flex lg:block space-x-4 lg:space-x-0 overflow-x-auto lg:overflow-visible whitespace-nowrap scrollbar-hide">
+                    <SidebarNav items={sidebarNavItems} className="flex lg:flex-col space-x-4 lg:space-x-0 lg:space-y-4" />
+                  </div>
                 </aside>
                 <div className="flex-1 w-full">{children}</div>
               </div>

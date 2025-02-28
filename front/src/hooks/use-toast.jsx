@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 // ✅ Create a context for toast notifications
 const ToastContext = React.createContext();
 
-export function useToast() {
+function useToast() {
   const context = React.useContext(ToastContext);
   if (!context) {
     throw new Error("useToast must be used within a ToastProvider");
@@ -18,7 +18,7 @@ export function useToast() {
 }
 
 // ✅ Toast Provider to manage toasts globally
-export function ToastProvider({ children }) {
+function ToastProvider({ children }) {
   const [toasts, setToasts] = React.useState([]);
 
   const addToast = ({ title, description, variant = "default" }) => {
