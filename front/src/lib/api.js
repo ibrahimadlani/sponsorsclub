@@ -1,5 +1,5 @@
 
-const API_BASE_URL = "http://localhost:8001";
+const API_BASE_URL = "http://172.20.10.8:8001";
 
 // 🔹 Reset Password Request
 export const resetPassword = async (email) => {

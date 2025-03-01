@@ -20,7 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'django.contrib.staticfiles',
+    "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
@@ -161,6 +161,6 @@ EMAIL_BACKEND = str(os.environ.get("EMAIL_BACKEND"))
 EMAIL_HOST = str(os.environ.get("EMAIL_HOST"))
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT"))  # Secure SMTP port
 EMAIL_USE_SSL = True  # SSL must be enabled for Zoho
-EMAIL_HOST_USER =  str(os.environ.get("EMAIL_HOST_USER"))
+EMAIL_HOST_USER = str(os.environ.get("EMAIL_HOST_USER"))
 EMAIL_HOST_PASSWORD = str(os.environ.get("EMAIL_HOST_PASSWORD"))
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

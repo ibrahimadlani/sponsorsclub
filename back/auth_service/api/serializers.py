@@ -1,4 +1,4 @@
-""" Serializers """
+"""Serializers"""
 
 import time
 import requests
@@ -26,7 +26,9 @@ def get_google_address(raw_address):
         dict or None: A dictionary containing formatted address components, or None if not found.
     """
     if not GOOGLE_API_KEY:
-        raise ValueError("Google Maps API key is missing. Set GOOGLE_MAPS_API_KEY in your environment.")
+        raise ValueError(
+            "Google Maps API key is missing. Set GOOGLE_MAPS_API_KEY in your environment."
+        )
 
     # Étape 1: Vérifier si l'adresse est reconnue par Google Places API
     places_url = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
@@ -60,7 +62,10 @@ def get_google_address(raw_address):
     address_data = geocode_data["results"][0]
 
     # Extraction des composants d'adresse
-    components = {comp["types"][0]: comp["long_name"] for comp in address_data["address_components"]}
+    components = {
+        comp["types"][0]: comp["long_name"]
+        for comp in address_data["address_components"]
+    }
 
     # Construire l'adresse formatée
     structured_address = {
@@ -79,6 +84,8 @@ def get_google_address(raw_address):
     }
 
     return structured_address
+
+
 class AddressSerializer(serializers.ModelSerializer):
     """Serializer for the Address model."""
 
@@ -91,11 +98,16 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for the User model."""
 
     raw_address = serializers.CharField(write_only=True, required=False)  # Input brut
-    address_details = AddressSerializer(read_only=True, source="address")  # Output formatée si reconnue
-    password = serializers.CharField(write_only=True, required=True)  # ✅ Make password required and write-only
+    address_details = AddressSerializer(
+        read_only=True, source="address"
+    )  # Output formatée si reconnue
+    password = serializers.CharField(
+        write_only=True, required=True
+    )  # ✅ Make password required and write-only
 
     class Meta:
         """Meta class for the UserSerializer."""
+
         model = User
         fields = [
             "id",
@@ -127,7 +139,9 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Créer un nouvel utilisateur avec une gestion correcte du mot de passe."""
         raw_address = validated_data.pop("raw_address", None)
-        password = validated_data.pop("password")  # ✅ Extract password before user creation
+        password = validated_data.pop(
+            "password"
+        )  # ✅ Extract password before user creation
 
         user = User(**validated_data)  # ✅ Create user instance without saving
         user.set_password(password)  # ✅ Hash password before saving
@@ -158,7 +172,9 @@ class UserSerializer(serializers.ModelSerializer):
                     place_id=formatted_address["place_id"], defaults=formatted_address
                 )
                 instance.address = address_instance
-                instance.raw_address = None  # On supprime l'ancienne adresse brute si elle existait
+                instance.raw_address = (
+                    None  # On supprime l'ancienne adresse brute si elle existait
+                )
             else:
                 # Si Google ne reconnaît pas l'adresse, on ne touche pas `address` et on stocke en brut
                 instance.raw_address = raw_address
@@ -168,6 +184,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
 
 User = get_user_model()
 
@@ -195,9 +212,9 @@ class ChangePasswordSerializer(serializers.Serializer):
         return attrs
 
 
-
 class ResetPasswordConfirmSerializer(serializers.Serializer):
     """Serializer to validate the reset token and set a new password."""
+
     token = serializers.UUIDField()
     new_password = serializers.CharField(write_only=True)
 
@@ -219,8 +236,10 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
 
         return {"message": "Password successfully reset."}
 
+
 class ResetPasswordConfirmSerializer(serializers.Serializer):
     """Serializer to validate the reset token and set a new password."""
+
     token = serializers.UUIDField()
     new_password = serializers.CharField(write_only=True)
 

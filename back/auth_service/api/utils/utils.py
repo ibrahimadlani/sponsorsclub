@@ -1,10 +1,11 @@
 from django.core.mail import send_mail
 from django.conf import settings
 
+
 def send_verification_email(user):
     """Send an account activation email with a verification token."""
     subject = "Activate Your Account 🚀"
-    activation_link = f"http://localhost:3000/verify-email/{user.verification_token}"
+    activation_link = f"http://172.20.10.8:3000/verify-email/{user.verification_token}"
     message = f"""
     Bonjour {user.first_name},
 

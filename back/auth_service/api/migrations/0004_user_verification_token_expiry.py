@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0003_alter_user_verification_token'),
+        ("api", "0003_alter_user_verification_token"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='verification_token_expiry',
+            model_name="user",
+            name="verification_token_expiry",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

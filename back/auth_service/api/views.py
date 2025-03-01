@@ -22,6 +22,8 @@ from .serializers import (
     UserSerializer,
     ResetPasswordConfirmSerializer,
 )
+
+
 class ResetPasswordView(APIView):
     """This class allows a user to reset their password by requesting a reset token."""
 
@@ -30,22 +32,28 @@ class ResetPasswordView(APIView):
         email = request.data.get("email")
 
         if not email:
-            return Response({"error": "Email field is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Email field is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             user = User.objects.get(email=email)
             # Generate a password reset token
             reset_token = str(uuid.uuid4())
             user.reset_password_token = reset_token
-            user.reset_token_expiry = now() + timedelta(hours=1)  # Token valid for 1 hour
+            user.reset_token_expiry = now() + timedelta(
+                hours=1
+            )  # Token valid for 1 hour
             user.save()
 
             # Construct the reset link
-            reset_link = f"http://localhost:3000/reset-password/confirm?token={reset_token}"
+            reset_link = (
+                f"http://172.20.10.8:3000/reset-password/confirm?token={reset_token}"
+            )
 
             # Send email
             send_mail(
-
                 subject="SponsorsClub · Reset Your Password",
                 message=f"Click the link to reset your password: {reset_link}",
                 from_email=settings.DEFAULT_FROM_EMAIL,
@@ -55,20 +63,24 @@ class ResetPasswordView(APIView):
 
         except User.DoesNotExist:
             # Prevents email enumeration attacks
-            pass  
+            pass
 
-        return Response({"detail": "If the email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "If the email exists, a reset link has been sent."},
+            status=status.HTTP_200_OK,
+        )
+
 
 class ResetPasswordConfirmView(APIView):
     """This class allows a user to confirm the password reset using a token."""
-    
+
     def post(self, request):
         """POST method to validate token and set a new password."""
         serializer = ResetPasswordConfirmSerializer(data=request.data)
         if serializer.is_valid():
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  
+
 
 class RetrieveAPIView(APIView):
     """This class retrieves the current user's information."""
@@ -80,8 +92,10 @@ class RetrieveAPIView(APIView):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
+
 class UserListAPIView(generics.ListAPIView):
     """This class retrieves a list of users."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -136,7 +150,6 @@ class ResetPasswordConfirmView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Custom TokenObtainPairSerializer to include additional user data in the response."""
 
@@ -150,7 +163,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["is_verified"] = user.is_verified
         token["is_staff"] = user.is_staff
 
-
         return token
 
 
@@ -158,6 +170,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     """Custom TokenObtainPairView to use the custom serializer."""
 
     serializer_class = MyTokenObtainPairSerializer
+
 
 class VerifyEmailView(APIView):
     """Activate user account using a verification token."""
@@ -167,10 +180,15 @@ class VerifyEmailView(APIView):
         try:
             user = User.objects.get(verification_token=token)
         except User.DoesNotExist:
-            return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid or expired token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if user.verification_token_expiry < now():
-            return Response({"error": "Token has expired."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Token has expired."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         user.is_active = True
         user.is_verified = True
@@ -178,7 +196,10 @@ class VerifyEmailView(APIView):
         user.verification_token_expiry = None
         user.save()
 
-        return Response({"message": "Your account has been activated successfully!"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Your account has been activated successfully!"},
+            status=status.HTTP_200_OK,
+        )
 
 
 class RegisterUserAPIView(generics.CreateAPIView):
@@ -196,11 +217,15 @@ class RegisterUserAPIView(generics.CreateAPIView):
             # Generate a unique verification token
             verification_token = str(uuid.uuid4())
             user.verification_token = verification_token
-            user.verification_token_expiry = now() + timedelta(hours=24)  # Token valid for 24 hours
+            user.verification_token_expiry = now() + timedelta(
+                hours=24
+            )  # Token valid for 24 hours
             user.save()
 
             # Construct verification link
-            verification_link = f"http://localhost:3000/verify-email?token={verification_token}"
+            verification_link = (
+                f"http://172.20.10.8:3000/verify-email?token={verification_token}"
+            )
 
             # Send verification email
             send_mail(
@@ -223,12 +248,12 @@ class RegisterUserAPIView(generics.CreateAPIView):
             )
 
             return Response(
-                {"message": "Account created successfully. Check your email to verify your account."},
-                status=status.HTTP_201_CREATED
+                {
+                    "message": "Account created successfully. Check your email to verify your account."
+                },
+                status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    
 
 
 class VerifyEmailAPIView(APIView):
@@ -239,16 +264,28 @@ class VerifyEmailAPIView(APIView):
         token = request.data.get("token")
 
         if not token:
-            return Response({"error": "Verification token is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Verification token is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             user = User.objects.get(verification_token=token)
         except User.DoesNotExist:
-            return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid or expired token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # ✅ Ensure token_expiry is set before comparing
-        if user.verification_token_expiry is None or user.verification_token_expiry < now():
-            return Response({"error": "Token has expired or is invalid."}, status=status.HTTP_400_BAD_REQUEST)
+        if (
+            user.verification_token_expiry is None
+            or user.verification_token_expiry < now()
+        ):
+            return Response(
+                {"error": "Token has expired or is invalid."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # ✅ Activate user
         user.is_active = True
@@ -257,4 +294,7 @@ class VerifyEmailAPIView(APIView):
         user.verification_token_expiry = None
         user.save()
 
-        return Response({"message": "Your account has been activated successfully!"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Your account has been activated successfully!"},
+            status=status.HTTP_200_OK,
+        )

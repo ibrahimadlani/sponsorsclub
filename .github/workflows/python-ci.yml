@@ -2,9 +2,9 @@ name: Python CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
 
 jobs:
   build:
@@ -28,16 +28,19 @@ jobs:
       run: |
         python3 -m flake8 ./back --max-line-length=88 --exclude=venv,__pycache__
 
-    - name: Test run
+    - name: Unit Test Coverage (pytest 8.3.4)
       run: |
         pytest ./back
+      
+    - name: T
+      run: |
+        pytest ./back --cov=./back/auth_service/core --cov-report=term --cov-fail-under=90
       
     - name: Test coverage
       run: |
         pytest ./back --cov=./back/auth_service/core --cov-report=term --cov-fail-under=90
       
 
-    - name: Pylint linting
+    - name: Linter (pylint 3.3.4)
       run: |
-        pylint --rcfile=./back/.pylintrc ./back/auth_service/core
-        pylint --rcfile=./back/.pylintrc ./back/auth_service/api
+        pylint --rcfile=./back/auth_service/.pylintrc ./back/auth_service

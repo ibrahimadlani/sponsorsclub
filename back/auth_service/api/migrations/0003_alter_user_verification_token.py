@@ -7,13 +7,15 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0002_user_reset_token_expiry'),
+        ("api", "0002_user_reset_token_expiry"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='verification_token',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, null=True, unique=True),
+            model_name="user",
+            name="verification_token",
+            field=models.UUIDField(
+                default=uuid.uuid4, editable=False, null=True, unique=True
+            ),
         ),
     ]

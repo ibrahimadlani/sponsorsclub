@@ -19,7 +19,7 @@ function VerifyEmailComponent() {
 
     async function verifyEmail() {
       try {
-        const response = await fetch(`http://localhost:8001/api/auth/verify-email/`, {
+        const response = await fetch(`http://172.20.10.8:8001/api/auth/verify-email/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
