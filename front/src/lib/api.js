@@ -1,5 +1,5 @@
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "http://localhost:8001";
 
 // 🔹 Reset Password Request
 export const resetPassword = async (email) => {
@@ -135,34 +135,50 @@ export const fetchUserProfile = async () => {
 };
 
 // 🔹 Update User Profile
-export const updateUserProfile = async (userId, data) => {
+// 🔹 Mettre à jour le profil utilisateur avec PATCH
+export const updateProfile = async (id, data) => {
   let token = localStorage.getItem("accessToken");
-  if (!token) throw new Error("User not authenticated");
+  console.log(data);
+  if (!token) throw new Error("Utilisateur non authentifié");
+
+  // 🔥 Récupérer l'ID utilisateur via fetchUserProfile()
+  const user = await fetchUserProfile();
+  const userId = user.id; // Assurez-vous que l'ID est bien récupéré depuis le profil utilisateur
+
+  // ✅ Vérification de la structure du payload avant l'envoi
+  if (typeof data !== "object") {
+    throw new Error("Les données de mise à jour doivent être un objet JSON valide");
+  }
 
   let res = await fetch(`${API_BASE_URL}/api/users/${userId}/`, {
-    method: "PUT",
+    method: "PATCH", // ✅ Utilisation de PATCH pour ne modifier que certains champs
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(data), // ✅ S'assurer que data est bien stringifié
   });
 
   if (res.status === 401) {
     token = await refreshAccessToken();
     res = await fetch(`${API_BASE_URL}/api/users/${userId}/`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data), // ✅ Même correction ici
     });
   }
 
-  if (!res.ok) throw new Error("Failed to update profile");
+  if (!res.ok) {
+    const errorResponse = await res.json();
+    throw new Error(errorResponse.message || "Échec de la mise à jour du profil");
+  }
+
   return res.json();
 };
+
 
 // 🔹 Request Password Reset
 export const requestPasswordReset = async (email) => {

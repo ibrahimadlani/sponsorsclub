@@ -20,7 +20,7 @@ from .views import (
 urlpatterns = [
     # User Endpoints
     path("users/", UserListAPIView.as_view(), name="user-list"),
-    path("users/<int:pk>/", UserRUDAPIView.as_view(), name="user-rud"),
+    path("users/<str:pk>/", UserRUDAPIView.as_view(), name="user-rud"),
     
     # Auth Endpoints
     path("auth/login/", MyTokenObtainPairView.as_view(), name="auth-login"),

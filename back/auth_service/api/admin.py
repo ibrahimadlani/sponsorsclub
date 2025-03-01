@@ -2,73 +2,80 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, Address
 
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    """Define the admin pages for users."""
+    """Admin panel configuration for the User model"""
 
     list_display = (
         "email",
         "first_name",
         "last_name",
-        "phone_country_code",
-        "phone_number",
-        "date_of_birth",
-        "gender",
-        "country",
-        "timezone",
-        "subscription_plan",
         "is_verified",
         "is_active",
-        "is_banned",
         "is_staff",
-        "last_login",
         "date_joined",
     )
-    search_fields = ("email", "first_name", "last_name")
-    readonly_fields = ("last_login", "date_joined")
-    ordering = ("email",)
+    list_filter = ("is_verified", "is_active", "is_staff", "subscription_plan")
+    search_fields = ("email", "first_name", "last_name", "phone_number")
 
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Personal Info", {"fields": (
-            "first_name", "last_name", "phone_country_code", "phone_number", "date_of_birth", "gender",
-            "profile_picture_url", "cover_photo_url", "bio", "country", "timezone"
-        )}),
-        ("Permissions", {"fields": ("is_verified", "is_active", "is_banned", "is_staff", "is_superuser")}),
-        ("Important Dates", {"fields": ("last_login", "date_joined")}),
-        ("Subscription", {"fields": ("subscription_plan",)}),
-        ("Password Reset", {"fields": ("reset_password_token", "reset_token_expiry")}),
+        ("🔹 User Info", {"fields": ("email", "first_name", "last_name", "phone_country_code", "phone_number")}),
+        ("📷 Profile", {"fields": ("profile_picture_url", "cover_photo_url", "bio", "date_of_birth", "gender")}),
+        ("🌍 Location", {"fields": ("address", "country", "language", "timezone")}),
+        ("💳 Subscription & Status", {"fields": ("subscription_plan", "is_verified", "is_active", "is_banned", "is_staff")}),
+        ("🔑 Security & Authentication", {"fields": ("password",)}),  # ✅ Editable password field
+        ("📜 Read-Only Fields", {
+            "fields": (
+                "verification_token",  # ✅ Read-Only
+                "verification_token_expiry",
+                "reset_password_token",  # ✅ Read-Only
+                "reset_token_expiry",
+                "last_login",
+                "date_joined",
+            )
+        }),
     )
 
-admin.site.register(User, UserAdmin)
+    readonly_fields = ("verification_token", "verification_token_expiry", "reset_password_token", "reset_token_expiry", "last_login", "date_joined")
 
+    add_fieldsets = (
+        (
+            "➕ New User",
+            {
+                "classes": ("wide",),
+                "fields": ("email", "first_name", "last_name", "password1", "password2"),
+            },
+        ),
+    )
+
+    ordering = ("-date_joined",)
+    filter_horizontal = ()
+
+@admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    """Define the admin panel for managing addresses."""
-    list_display = (
-        "formatted_address",
-        "street_number",
-        "route",
-        "locality",
-        "administrative_area_level_1",
-        "administrative_area_level_2",
-        "country",
-        "postal_code",
-        "latitude",
-        "longitude",
-        "place_id",
-        "types",
-        "created_at",
-        "updated_at",
-    )
-    search_fields = (
-        "formatted_address",
-        "street_number",
-        "route",
-        "locality",
-        "administrative_area_level_2",
-        "administrative_area_level_1",
-        "country",
-        "postal_code",
-        "place_id",
+    """Admin panel configuration for the Address model"""
+
+    list_display = ("formatted_address", "locality", "country", "postal_code", "latitude", "longitude")
+    search_fields = ("formatted_address", "locality", "country", "postal_code", "place_id")
+    list_filter = ("country",)
+    ordering = ("-created_at",)
+
+    fieldsets = (
+        ("🏡 Address Details", {
+            "fields": (
+                "formatted_address",
+                "street_number",
+                "route",
+                "locality",
+                "administrative_area_level_1",
+                "administrative_area_level_2",
+                "country",
+                "postal_code",
+            )
+        }),
+        ("📍 Coordinates", {"fields": ("latitude", "longitude", "place_id")}),
+        ("📜 Metadata", {"fields": ("types",)}),
+        ("⏳ Timestamps", {"fields": ("created_at", "updated_at")}),
     )
 
-admin.site.register(Address, AddressAdmin)
+    readonly_fields = ("created_at", "updated_at")

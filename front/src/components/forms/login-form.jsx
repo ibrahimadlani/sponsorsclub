@@ -8,6 +8,7 @@ import { login } from "@/lib/userApi"; // Mise à jour de l'import depuis le mod
 import { toast } from "sonner"; // Import de sonner pour les notifications
 import { motion, AnimatePresence } from "framer-motion"; // Pour animer les erreurs
 import { Loader, XCircle } from "lucide-react"; // Icones Lucide
+import { Suspense } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ const errorMessages = {
   UNKNOWN_ERROR: "Une erreur inconnue est survenue.",
 };
 
-export function LoginForm({ className, ...props }) {
+export function LoginFormContent({ className, ...props }) {
   const {
     register,
     handleSubmit,
@@ -210,5 +211,14 @@ export function LoginForm({ className, ...props }) {
         </a>.
       </div>
     </div>
+  );
+}
+
+// Wrapper component with Suspense
+export function LoginForm(props) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginFormContent {...props} />
+    </Suspense>
   );
 }

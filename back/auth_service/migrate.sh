@@ -4,6 +4,7 @@
 # /py/bin/python manage.py collectstatic --noinput
 
 # Run migrations
+/py/bin/python manage.py wait_for_db
 /py/bin/python manage.py makemigrations
 /py/bin/python manage.py migrate --noinput
 

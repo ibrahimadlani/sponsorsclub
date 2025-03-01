@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner"; // Import Sonner for toast notifications
 import { confirmPasswordReset } from "@/lib/api"; // Import the confirm API function
 
 import { cn } from "@/lib/utils";
@@ -12,19 +13,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Suspense } from "react";
 
-// 🔹 Define Zod validation schema for confirming the password reset with two password fields
+// 🔹 Define Zod validation schema for confirming the password reset
 const resetPasswordConfirmSchema = z
   .object({
-    new_password: z.string().min(8, "Password must be at least 8 characters long"),
-    confirm_password: z.string().min(8, "Password must be at least 8 characters long"),
+    new_password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+    confirm_password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères."),
   })
   .refine((data) => data.new_password === data.confirm_password, {
-    message: "Passwords do not match",
+    message: "Les mots de passe ne correspondent pas.",
     path: ["confirm_password"],
   });
 
-export function ResetPasswordConfirmForm({ className, ...props }) {
+function ResetPasswordConfirmFormContent({ className, ...props }) {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -37,23 +39,22 @@ export function ResetPasswordConfirmForm({ className, ...props }) {
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
 
   const onSubmit = async (data) => {
     if (!token) {
-      setConfirmationMessage("Reset token is missing from the URL.");
+      toast.error("Le jeton de réinitialisation est manquant.");
       return;
     }
     setLoading(true);
     try {
-      const response = await confirmPasswordReset(token, data.new_password);
-      console.log("Password reset confirmed:", response);
-      setConfirmationMessage("Your password has been reset successfully. Please login with your new password.");
-      // Optionally redirect after a delay:
-      // router.push("/login");
+      await confirmPasswordReset(token, data.new_password);
+
+      // ✅ Show success toast & redirect to login
+      toast.success("Mot de passe réinitialisé avec succès !");
+      setTimeout(() => router.push("/login"), 2000);
     } catch (error) {
-      console.error("Password reset confirmation failed:", error.message || "Error");
-      setConfirmationMessage("Failed to reset password. Please try again.");
+      console.error("Échec de la réinitialisation du mot de passe:", error.message || "Erreur");
+      toast.error("Échec de la réinitialisation du mot de passe. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
@@ -63,9 +64,9 @@ export function ResetPasswordConfirmForm({ className, ...props }) {
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Reset Password</CardTitle>
+          <CardTitle className="text-xl">Réinitialisation du mot de passe</CardTitle>
           <CardDescription>
-            Enter your new password below.
+            Entrez votre nouveau mot de passe ci-dessous.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -73,12 +74,12 @@ export function ResetPasswordConfirmForm({ className, ...props }) {
             <div className="grid gap-6">
               {/* New Password Input */}
               <div className="grid gap-2">
-                <Label htmlFor="new_password">New Password</Label>
+                <Label htmlFor="new_password">Nouveau mot de passe</Label>
                 <Input
                   id="new_password"
                   type="password"
                   {...register("new_password")}
-                  placeholder="Enter new password"
+                  placeholder="Entrez un nouveau mot de passe"
                 />
                 {errors.new_password && (
                   <p className="text-red-500 text-sm">{errors.new_password.message}</p>
@@ -87,12 +88,12 @@ export function ResetPasswordConfirmForm({ className, ...props }) {
 
               {/* Confirm New Password Input */}
               <div className="grid gap-2">
-                <Label htmlFor="confirm_password">Confirm New Password</Label>
+                <Label htmlFor="confirm_password">Confirmer le mot de passe</Label>
                 <Input
                   id="confirm_password"
                   type="password"
                   {...register("confirm_password")}
-                  placeholder="Confirm new password"
+                  placeholder="Confirmez votre mot de passe"
                 />
                 {errors.confirm_password && (
                   <p className="text-red-500 text-sm">{errors.confirm_password.message}</p>
@@ -101,22 +102,27 @@ export function ResetPasswordConfirmForm({ className, ...props }) {
 
               {/* Submit Button */}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Resetting Password..." : "Reset Password"}
+                {loading ? "Réinitialisation en cours..." : "Réinitialiser le mot de passe"}
               </Button>
             </div>
           </form>
-          {confirmationMessage && (
-            <p className="mt-4 text-center text-green-600 text-sm">{confirmationMessage}</p>
-          )}
         </CardContent>
       </Card>
 
       <div className="text-center text-sm">
-        Remember your password?{" "}
+        Vous vous souvenez de votre mot de passe ?{" "}
         <a href="/login" className="underline underline-offset-4">
-          Login
+          Se connecter
         </a>
       </div>
     </div>
+  );
+}
+
+export function ResetPasswordConfirmForm(props) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordConfirmFormContent {...props} />
+    </Suspense>
   );
 }

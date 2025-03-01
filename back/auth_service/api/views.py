@@ -204,8 +204,19 @@ class RegisterUserAPIView(generics.CreateAPIView):
 
             # Send verification email
             send_mail(
-                subject="SponsorsClub · Confirm Your Email",
-                message=f"Click the link to confirm your email: {verification_link}",
+                subject=f"Welcome to SponsorClub, {user.first_name}! Confirm Your Email",
+                message=(
+                    f"Hi {user.first_name},\n\n"
+                    "Welcome to SponsorClub! We're excited to have you join us.\n\n"
+                    "To start connecting with sponsors, you'll need to verify your email.\n\n"
+                    "Click the link below to confirm your email:\n"
+                    f"{verification_link}\n\n"
+                    "If you didn’t create an account, you can ignore this email.\n\n"
+                    "See you soon!\n\n"
+                    "Best,\n"
+                    "Ibrahim Adlani\n"
+                    "CEO, SponsorClub"
+                ),
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False,

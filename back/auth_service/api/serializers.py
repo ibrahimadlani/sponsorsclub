@@ -92,6 +92,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     raw_address = serializers.CharField(write_only=True, required=False)  # Input brut
     address_details = AddressSerializer(read_only=True, source="address")  # Output formatée si reconnue
+    password = serializers.CharField(write_only=True, required=True)  # ✅ Make password required and write-only
 
     class Meta:
         """Meta class for the UserSerializer."""
@@ -119,24 +120,27 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "raw_address",
             "address_details",
+            "password",  # ✅ Include password explicitly
         ]
-        extra_kwargs = {"password": {"write_only": True, "required": False}}
+        extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        """Créer un nouvel utilisateur avec une gestion intelligente de l'adresse."""
+        """Créer un nouvel utilisateur avec une gestion correcte du mot de passe."""
         raw_address = validated_data.pop("raw_address", None)
-        user = User.objects.create_user(**validated_data)
+        password = validated_data.pop("password")  # ✅ Extract password before user creation
+
+        user = User(**validated_data)  # ✅ Create user instance without saving
+        user.set_password(password)  # ✅ Hash password before saving
+        user.save()  # ✅ Save after password is set
 
         if raw_address:
             formatted_address = get_google_address(raw_address)
             if formatted_address:
-                # Si l'adresse est valide, on l'enregistre dans la table `Address`
                 address_instance, _ = Address.objects.get_or_create(
                     place_id=formatted_address["place_id"], defaults=formatted_address
                 )
                 user.address = address_instance
             else:
-                # Si l'adresse est invalide, on la stocke en texte brut dans `user.raw_address`
                 user.raw_address = raw_address
 
         user.save()

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
+import { toast } from "sonner"; // Import Sonner for toast notifications
 import { resetPassword } from "@/lib/api"; // Import your API function
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// 🔹 Define Zod validation schema for email only
+// 🔹 Define Zod validation schema for email
 const resetRequestSchema = z.object({
-  email: z.string().email("Invalid email format"),
+  email: z.string().email("Format d'email invalide"),
 });
 
 export function ResetPasswordForm({ className, ...props }) {
@@ -26,19 +27,20 @@ export function ResetPasswordForm({ className, ...props }) {
   });
 
   const [loading, setLoading] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      // Call your API function to request a password reset email
+      // Call API to request password reset
       await resetPassword(data.email);
-      // Display confirmation message (even if the email doesn't exist, for security reasons)
-      setConfirmationMessage("If an account with that email exists, a reset link has been sent.");
+
+      // ✅ Show a success toast notification
+      toast.success("Un email de réinitialisation a été envoyé !");
     } catch (error) {
-      console.error("Password reset request failed:", error.message || "Error");
-      // Show the same confirmation to avoid disclosing registration status
-      setConfirmationMessage("If an account with that email exists, a reset link has been sent.");
+      console.error("Échec de la demande de réinitialisation:", error.message || "Erreur");
+
+      // ✅ Always show the same toast message for security reasons
+      toast.success("Un email de réinitialisation a été envoyé !");
     } finally {
       setLoading(false);
     }
@@ -48,7 +50,7 @@ export function ResetPasswordForm({ className, ...props }) {
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Reinitialiser votre mot de passe</CardTitle>
+          <CardTitle className="text-xl">Réinitialiser votre mot de passe</CardTitle>
           <CardDescription>
             Entrez votre adresse email pour recevoir un lien de réinitialisation
           </CardDescription>
@@ -62,17 +64,14 @@ export function ResetPasswordForm({ className, ...props }) {
                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Envoie..." : "Envoyer le lien"}
+                {loading ? "Envoi..." : "Envoyer le lien"}
               </Button>
             </div>
           </form>
-          {confirmationMessage && (
-            <p className="mt-4 text-center text-green-600 text-sm">{confirmationMessage}</p>
-          )}
         </CardContent>
       </Card>
       <div className="text-center text-sm">
-        Vous connaissez votre mot de passe?{" "}
+        Vous connaissez votre mot de passe ?{" "}
         <a href="/login" className="underline underline-offset-4">
           Se connecter ici
         </a>

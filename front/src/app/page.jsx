@@ -36,6 +36,7 @@ import Skeleton from "@/components/skeleton-item";
 // Navigation Components
 import { NavUser } from "@/components/nav-user";
 import { NavMenu } from "@/components/nav-bar";
+import AthletesTabs from "@/components/athletes-tabs";
 
 // Charts
 import FollowerGrowthChart from "@/components/bar-chart";
@@ -364,6 +365,21 @@ const ItemComponent = ({ item }) => {
   );
 };
 
+const GoogleMap = () => {
+  return (
+    <div className="w-full h-full">
+      <iframe
+        width="100%"
+        height="100%"
+        loading="lazy"
+        allowFullScreen
+        referrerPolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps/embed/v1/view?key=AIzaSyD5z6oVvSfl5zkdyIXlsIiaXGHTqtmfB3I&center=48.8566,2.3522&zoom=6"
+      />
+    </div>
+  );
+};
+
 export default function Page() {
 
   const { user } = useContext(AuthContext);
@@ -371,6 +387,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [isHidden, setIsHidden] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   // Fetch data (Simulating API call)
@@ -416,17 +433,24 @@ export default function Page() {
 
             </div>
         </header>
-
-        {/* GRID des items */}
-        {/* <AthletesTabs className="w-full"/> */}
+        <AthletesTabs className="w-full"/>
+        {/* Conditional Rendering */}
+        {showMap ? (
+            <GoogleMap />
+          ) : (
         <div className="flex flex-1 flex-col gap-4 px-6 md:px-12 2xl:px-24 py-3">
-          <div className="grid mb-36 gap-x-6 gap-y-12 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
-            {loading
-              ? Array(10).fill(0).map((_, index) => <Skeleton key={index} />)
-              : items.map((item) => <ItemComponent key={item.id} item={item} />)
-            }
-          </div>
+          
+            <div className="grid mb-36 gap-x-6 gap-y-12 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
+              {loading
+                ? Array(10).fill(0).map((_, index) => <Skeleton key={index} />)
+                : items.map((item) => <ItemComponent key={item.id} item={item} />)
+              }
+            </div>
         </div>
+          )}  
+        {/* GRID des items */}
+        
+
         <footer className="sticky bottom-0 w-full px-6 md:px-12 2xl:px-24 py-4 text-center border-t bg-background items-center justify-between text-sm hidden md:flex">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="">
@@ -471,7 +495,7 @@ export default function Page() {
         {/* FOOTER - version mobile */}
         {/* ${isHidden ? "translate-y-24" : "translate-y-0"} */}
         <div className="flex w-full justify-center">
-          <Button className={`fixed bottom-16 hidden md:flex  py-0 text-xs bg-foreground rounded-full text-background shadow-xl  items-center justify-center z-50  font-semibold  `}>
+          <Button className={`fixed bottom-16 hidden md:flex  py-0 text-xs bg-foreground rounded-full text-background shadow-xl  items-center justify-center z-50  font-semibold `} onClick={() => setShowMap(!showMap)}>
 
             Afficher la carte
             <MapIcon className="w-4 h-4" />
