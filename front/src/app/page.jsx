@@ -448,7 +448,7 @@ export default function Page() {
             </div>
         </header>
         {/* Tabs for athlete categories */}
-        <AthletesTabs className="w-full"/>
+        {/* <AthletesTabs className="w-full"/> */}
         {/* Conditional rendering: show map or grid */}
         {showMap ? (
             <GoogleMap />
