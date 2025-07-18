@@ -73,6 +73,7 @@ export function NavUser({ user }) {
 
   return (
     <SidebarMenu className="flex justify-end">
+      
       <SidebarMenuItem className="relative">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

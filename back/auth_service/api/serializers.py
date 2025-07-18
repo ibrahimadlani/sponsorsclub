@@ -1,14 +1,15 @@
 """Serializers"""
 
-import time
-import requests
 import os
+import requests
 
+from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+
 from .models import User, Address
-from django.utils.timezone import now, timedelta
+
 
 
 # API Key Google stockée en variable d'environnement
@@ -17,20 +18,14 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 def get_google_address(raw_address):
     """
-    Convert a raw, unformatted address into a structured address using Google Places & Geocoding API.
-
-    Args:
-        raw_address (str): Unformatted address input.
-
-    Returns:
-        dict or None: A dictionary containing formatted address components, or None if not found.
+    Convert a raw, unformatted address into a structured address
+    using Google Places & Geocoding API.
     """
     if not GOOGLE_API_KEY:
         raise ValueError(
             "Google Maps API key is missing. Set GOOGLE_MAPS_API_KEY in your environment."
-        )
+            )
 
-    # Étape 1: Vérifier si l'adresse est reconnue par Google Places API
     places_url = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
     places_params = {
         "input": raw_address,
@@ -38,37 +33,31 @@ def get_google_address(raw_address):
         "types": "address",
         "language": "fr",
     }
-    places_response = requests.get(places_url, params=places_params)
+    places_response = requests.get(places_url, params=places_params, timeout=10)
     places_data = places_response.json()
 
     if not places_data.get("predictions"):
         return None  # Adresse non reconnue
 
-    # Récupérer le `place_id` de la première suggestion
     place_id = places_data["predictions"][0]["place_id"]
 
-    # Étape 2: Obtenir les détails complets via Geocoding API
     geocode_url = "https://maps.googleapis.com/maps/api/geocode/json"
     geocode_params = {
         "place_id": place_id,
         "key": GOOGLE_API_KEY,
     }
-    geocode_response = requests.get(geocode_url, params=geocode_params)
+    geocode_response = requests.get(geocode_url, params=geocode_params, timeout=10)
     geocode_data = geocode_response.json()
 
     if not geocode_data.get("results"):
         return None  # Impossible de récupérer les détails
 
     address_data = geocode_data["results"][0]
-
-    # Extraction des composants d'adresse
     components = {
-        comp["types"][0]: comp["long_name"]
-        for comp in address_data["address_components"]
-    }
+        comp["types"][0]: comp["long_name"] for comp in address_data["address_components"]
+        }
 
-    # Construire l'adresse formatée
-    structured_address = {
+    return {
         "formatted_address": address_data["formatted_address"],
         "street_number": components.get("street_number"),
         "route": components.get("route"),
@@ -83,13 +72,11 @@ def get_google_address(raw_address):
         "types": ",".join(address_data["types"]),
     }
 
-    return structured_address
-
-
 class AddressSerializer(serializers.ModelSerializer):
     """Serializer for the Address model."""
 
     class Meta:
+        """Meta class for the AddressSerializer."""
         model = Address
         fields = "__all__"
 
@@ -176,7 +163,8 @@ class UserSerializer(serializers.ModelSerializer):
                     None  # On supprime l'ancienne adresse brute si elle existait
                 )
             else:
-                # Si Google ne reconnaît pas l'adresse, on ne touche pas `address` et on stocke en brut
+                # Si Google ne reconnaît pas l'adresse, on ne touche pas
+                # `address` et on stocke en brut
                 instance.raw_address = raw_address
 
         for attr, value in validated_data.items():
@@ -212,29 +200,6 @@ class ChangePasswordSerializer(serializers.Serializer):
         return attrs
 
 
-class ResetPasswordConfirmSerializer(serializers.Serializer):
-    """Serializer to validate the reset token and set a new password."""
-
-    token = serializers.UUIDField()
-    new_password = serializers.CharField(write_only=True)
-
-    def validate(self, data):
-        """Validate the reset token and update the password."""
-        try:
-            user = User.objects.get(reset_password_token=data["token"])
-        except User.DoesNotExist:
-            raise serializers.ValidationError({"token": "Invalid or expired token."})
-
-        if user.reset_token_expiry < now():
-            raise serializers.ValidationError({"token": "Token has expired."})
-
-        # Set new password
-        user.set_password(data["new_password"])
-        user.reset_password_token = None  # Invalidate token
-        user.reset_token_expiry = None
-        user.save()
-
-        return {"message": "Password successfully reset."}
 
 
 class ResetPasswordConfirmSerializer(serializers.Serializer):
@@ -243,19 +208,18 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
     token = serializers.UUIDField()
     new_password = serializers.CharField(write_only=True)
 
-    def validate(self, data):
+    def validate(self, attrs):
         """Validate the reset token and update the password."""
         try:
-            user = User.objects.get(reset_password_token=data["token"])
-        except User.DoesNotExist:
-            raise serializers.ValidationError({"token": "Invalid or expired token."})
+            user = User.objects.get(reset_password_token=attrs["token"])
+        except User.DoesNotExist as exc:
+            raise serializers.ValidationError({"token": "Invalid or expired token."}) from exc
 
         if user.reset_token_expiry < now():
             raise serializers.ValidationError({"token": "Token has expired."})
 
-        # Set new password
-        user.set_password(data["new_password"])
-        user.reset_password_token = None  # Invalidate token
+        user.set_password(attrs["new_password"])
+        user.reset_password_token = None
         user.reset_token_expiry = None
         user.save()
 

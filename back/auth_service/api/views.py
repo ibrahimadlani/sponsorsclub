@@ -6,7 +6,7 @@ This file is used to define the views of the api app.
 import uuid
 
 from rest_framework import generics, permissions, status
-from rest_framework.generics import ListAPIView
+# from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -49,7 +49,7 @@ class ResetPasswordView(APIView):
 
             # Construct the reset link
             reset_link = (
-                f"http://172.20.10.8:3000/reset-password/confirm?token={reset_token}"
+                f"http://127.0.0.1:3000/reset-password/confirm?token={reset_token}"
             )
 
             # Send email
@@ -139,17 +139,6 @@ class ChangePasswordView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ResetPasswordConfirmView(APIView):
-    """This class allows a user to confirm the password reset using a token."""
-
-    def post(self, request):
-        """POST method to validate token and set a new password."""
-        serializer = ResetPasswordConfirmSerializer(data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Custom TokenObtainPairSerializer to include additional user data in the response."""
 
@@ -175,7 +164,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class VerifyEmailView(APIView):
     """Activate user account using a verification token."""
 
-    def post(self, request, token):
+    def post(self, request, token): # pylint: disable=unused-argument
         """POST method to verify email and activate the account."""
         try:
             user = User.objects.get(verification_token=token)
@@ -208,7 +197,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs): # pylint: disable=unused-argument
         """Override create method to generate verification token and send email."""
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -224,7 +213,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
 
             # Construct verification link
             verification_link = (
-                f"http://172.20.10.8:3000/verify-email?token={verification_token}"
+                f"http://127.0.0.1:3000/verify-email?token={verification_token}"
             )
 
             # Send verification email
@@ -249,7 +238,8 @@ class RegisterUserAPIView(generics.CreateAPIView):
 
             return Response(
                 {
-                    "message": "Account created successfully. Check your email to verify your account."
+                    "message": "Account created successfully.\
+                        Check your email to verify your account."
                 },
                 status=status.HTTP_201_CREATED,
             )

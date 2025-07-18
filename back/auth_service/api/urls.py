@@ -7,20 +7,21 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
     ChangePasswordView,
-    RegisterUserAPIView,  # ✅ Replaces UserCreateAPIView
+    RegisterUserAPIView,
     UserRUDAPIView,
     UserListAPIView,
     RetrieveAPIView,
     ResetPasswordView,
     ResetPasswordConfirmView,
     MyTokenObtainPairView,
-    VerifyEmailAPIView,  # ✅ New view for email verification
+    VerifyEmailAPIView,
 )
 
 urlpatterns = [
     # User Endpoints
     path("users/", UserListAPIView.as_view(), name="user-list"),
     path("users/<str:pk>/", UserRUDAPIView.as_view(), name="user-rud"),
+    
     # Auth Endpoints
     path("auth/login/", MyTokenObtainPairView.as_view(), name="auth-login"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="auth-refresh"),

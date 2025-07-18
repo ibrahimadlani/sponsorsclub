@@ -1,4 +1,4 @@
-altgraph @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/altgraph-0.17.2-py2.py3-none-any.whl
+altgraph
 asgiref==3.8.1
 astroid==3.3.8
 black==25.1.0
@@ -14,11 +14,12 @@ djangorestframework==3.15.2
 djangorestframework_simplejwt==5.4.0
 exceptiongroup==1.2.2
 flake8==7.1.2
-future @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/future-0.18.2-py3-none-any.whl
+future
+gunicorn>=20.1.0
 idna==3.10
 iniconfig==2.0.0
 isort==6.0.0
-macholib @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/macholib-1.15.2-py2.py3-none-any.whl
+macholib
 mccabe==0.7.0
 mypy-extensions==1.0.0
 packaging==24.2
@@ -33,7 +34,7 @@ pylint==3.3.4
 pytest==8.3.4
 pytest-cov==6.0.0
 requests==2.32.3
-six @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/six-1.15.0-py2.py3-none-any.whl
+six
 sqlparse==0.5.3
 tomli==2.2.1
 tomlkit==0.13.2

@@ -23,7 +23,6 @@ import {
   Youtube,
   MapIcon,
   ClipboardPen,
-  AlignJustify,
 } from "lucide-react";
 
 // UI Components
@@ -49,7 +48,7 @@ import AuthContext from "@/context/AuthContext";
 import { handleScroll, formatNumber } from "@/lib/utils";
 
 
-// Données JSON des athlètes avec leur URL de profil
+// Athlete data array with profile URLs and social stats
 const itemsData = [
   {
     id: 1,
@@ -65,7 +64,7 @@ const itemsData = [
     subscribers: { vb: 200000, instagram: 800000, youtube: 150000 },
     level: "PRO",
   },
-  {
+  ,{
     id: 2,
     name: "Victor Wembanyama",
     location: "Paris, France",
@@ -278,18 +277,19 @@ const itemsData = [
 
 ];
 
-// Composant pour afficher chaque item
+// Component to display each athlete/item card
 const ItemComponent = ({ item }) => {
 
   return (
     <div className="rounded-xl w-full group relative block transition-transform transform z-0">
-      {/* Badge de certification */}
+      {/* Certification badge if athlete is certified */}
       {item.certified && (
         <span className="absolute top-4 right-4 flex items-center gap-1 text-black bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow z-50">
           {item.category}
         </span>
       )}
 
+      {/* Carousel for athlete images and charts */}
       {item.isCarousel ? (
         <div className="relative w-full h-64 rounded-xl border overflow-hidden">
           <Carousel className="w-full h-full z-0">
@@ -309,7 +309,7 @@ const ItemComponent = ({ item }) => {
                     />
                   </CarouselItem>
                 ))}
-                {/* Slide du graphique */}
+                {/* Chart slides for follower growth and radar stats */}
                 <CarouselItem className="flex items-center justify-center h-full w-full">
                   <FollowerGrowthChart />
                 </CarouselItem>
@@ -319,7 +319,7 @@ const ItemComponent = ({ item }) => {
               </CarouselContent>
             </Link>
 
-            {/* Hide Buttons on Mobile */}
+            {/* Hide carousel navigation buttons on mobile */}
             <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration certified: true, z-30 hidden md:flex" />
             <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration certified: true, z-30 hidden md:flex" />
           </Carousel>
@@ -328,7 +328,7 @@ const ItemComponent = ({ item }) => {
         <div className="aspect-video rounded-xl bg-muted/50" />
       )}
 
-      {/* Informations de l'item */}
+      {/* Athlete/item info section */}
       <div className="flex flex-col mt-3">
         <div className="">
           <h1 className="font-medium text-base leading-2 flex justify-start items-center gap-2">{item.name}
@@ -340,15 +340,14 @@ const ItemComponent = ({ item }) => {
             ) : ("")}
           </h1>
 
-
+          {/* Location and bio */}
           <p className="font-normal text-sm dark:text-white/50 text-black/50 leading-5">
             <span className="font-medium">{item.location}</span>
             <span className="font-bold mx-2">·</span>
             <span>{item.bio}</span>
           </p>
-
-
         </div>
+        {/* Social media stats */}
         <div className="font-medium text-sm dark:text-white/50 text-black/50 leading-5 flex  items-center gap-2 my-2 ">
           <div className="flex items-center"><Instagram className="h-5 w-5 me-1" strokeWidth={1.5} />{formatNumber(item.subscribers.instagram)}</div>
           <span className="font-bold">·</span>
@@ -356,8 +355,9 @@ const ItemComponent = ({ item }) => {
           <span className="font-bold">·</span>
           <div className="flex items-center"><Youtube className="h-5 w-5 me-1" strokeWidth={1.5} />{formatNumber(item.subscribers.youtube)}</div>
         </div>
+        {/* Price info */}
         <p className="font-normal text-sm leading-5">
-          À partir de{" "}
+          From {" "}
           <span className="font-medium text-base">{item.price}</span>€
         </p>
       </div>
@@ -365,6 +365,7 @@ const ItemComponent = ({ item }) => {
   );
 };
 
+// Google Map component for displaying a map iframe
 const GoogleMap = () => {
   return (
     <div className="w-full h-full">
@@ -380,17 +381,19 @@ const GoogleMap = () => {
   );
 };
 
+// Main page component
 export default function Page() {
 
   const { user } = useContext(AuthContext);
 
+  // State for loading, items, UI toggles, and scroll
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [isHidden, setIsHidden] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Fetch data (Simulating API call)
+  // Simulate API call to fetch data
   useEffect(() => {
     setTimeout(() => {
       setItems(itemsData); // Load data after delay (simulate API call)
@@ -398,6 +401,7 @@ export default function Page() {
     }, 1500); // Simulate API response time (1.5s)
   }, []);
 
+  // Handle scroll to show/hide UI elements
   useEffect(() => {
     const onScroll = () => handleScroll(setIsHidden, lastScrollY, setLastScrollY);
 
@@ -409,37 +413,48 @@ export default function Page() {
   return (
     <SidebarProvider>
       <SidebarInset>
-        {/* HEADER */}
-        <header className="sticky top-0 z-50 w-full bg-background text-center border-b px-6 md:px-0 shadow-lg">
+        {/* HEADER: Logo, navigation, and user menu */}
+        <header className="sticky top-0 z-50 w-full bg-background text-center border-b px-6 md:px-0 ">
           <div className="relative flex items-center justify-center min-h-[80px]">
-            {/* Logo (positionné à gauche) */}
+            {/* Logo (left, desktop only) */}
             <div className="absolute left-6 top-6 md:left-12 2xl:left-24 hidden md:block">
               <Logo />
             </div>
 
-            {/* Barre de navigation centrale (Desktop) */}
+            {/* Center navigation (desktop) */}
             <div className="relative max-w-md flex-col justify-center items-center lg:flex hidden">
               <NavMenu />
             </div>
 
-            {/* Barre de navigation centrale (Mobile) */}
+            {/* Center navigation (mobile) */}
             <div className="relative max-w-md flex items-center md:hidden">
               <Logo className="md:hidden mx-auto" />
-
             </div>
+            {/* Call to Action link for mobile (always visible, inline style) */}
+            <div className="absolute right-2 top-4 md:hidden">
+              <a
+                href="/sponsor"
+                className="text-pink-600 font-semibold text-xs hover:underline transition-colors"
+                style={{ padding: 0, borderRadius: 0, boxShadow: 'none' }}
+              >
+                Sponsor
+              </a>
+            </div>
+            {/* User menu (right) and CTA */}
             <div className="absolute flex right-0 top-4 md:right-12 2xl:right-24 gap-1 items-center ">
                 <NavUser user={user} />
-              </div>
+            </div>
 
             </div>
         </header>
+        {/* Tabs for athlete categories */}
         <AthletesTabs className="w-full"/>
-        {/* Conditional Rendering */}
+        {/* Conditional rendering: show map or grid */}
         {showMap ? (
             <GoogleMap />
           ) : (
         <div className="flex flex-1 flex-col gap-4 px-6 md:px-12 2xl:px-24 py-3">
-          
+            {/* Grid of athlete cards or skeletons while loading */}
             <div className="grid mb-36 gap-x-6 gap-y-12 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
               {loading
                 ? Array(10).fill(0).map((_, index) => <Skeleton key={index} />)
@@ -448,9 +463,10 @@ export default function Page() {
             </div>
         </div>
           )}  
-        {/* GRID des items */}
+        {/* GRID of items end */}
         
 
+        {/* FOOTER (desktop) */}
         <footer className="sticky bottom-0 w-full px-6 md:px-12 2xl:px-24 py-4 text-center border-t bg-background items-center justify-between text-sm hidden md:flex">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="">
@@ -458,26 +474,26 @@ export default function Page() {
             </span>
             <span> · </span>
             <Link href="/privacy" className="hover:underline">
-              Confidentialité
+              Privacy
             </Link>
             <span> · </span>
             <Link href="/terms-of-services" className="hover:underline">
-              Conditions générales
+              Terms of Service
             </Link>
             <span> · </span>
             <Link href="/sitemap" className="hover:underline">
-              Plan du site
+              Sitemap
             </Link>
             <span> · </span>
             <Link href="/about" className="hover:underline">
-              Infos sur l&apos;entreprise
+              About
             </Link>
           </div>
           <div className="flex  items-center gap-2.5">
 
             <Link href="/privacy" className="font-semibold flex items-center gap-1 hover:underline  whitespace-nowrap">
               <Globe className="w-4 h-4" />
-              Français (FR)
+              English (EN)
             </Link>
             <span> · </span>
             <Link href="/privacy" className="font-semibold flex items-center gap-1 hover:underline  whitespace-nowrap">
@@ -487,38 +503,40 @@ export default function Page() {
             <span> · </span>
             <Link href="/privacy" className="font-semibold flex items-center gap-1 hover:underline  whitespace-nowrap">
 
-              Assistance et ressources
+              Help & Resources
               <ChevronDown className="w-4 h-4" />
             </Link>
           </div>
         </footer>
-        {/* FOOTER - version mobile */}
+        {/* FOOTER - mobile version */}
         {/* ${isHidden ? "translate-y-24" : "translate-y-0"} */}
         <div className="flex w-full justify-center">
+          {/* Button to toggle map on desktop */}
           <Button className={`fixed bottom-16 hidden md:flex  py-0 text-xs bg-foreground rounded-full text-background shadow-xl  items-center justify-center z-50  font-semibold `} onClick={() => setShowMap(!showMap)}>
-
-            Afficher la carte
+            Show map
             <MapIcon className="w-4 h-4" />
           </Button>
+          {/* Button to toggle map on mobile */}
           <Button className={`transition-transform duration certified: true, ease-in-out fixed bottom-24 md:hidden py-0 text-xs bg-foreground rounded-full text-background shadow-xl flex items-center justify-center z-50  font-semibold ${isHidden ? "translate-y-[75px]" : "translate-y-0"} `}>
-
-            Afficher la carte
+            Show map
             <MapIcon className="w-4 h-4" />
           </Button>
         </div>
+        {/* Mobile sticky navigation/footer */}
         <footer
           className={`fixed bottom-5 left-2.5 right-2.5 w-auto max-w-[560px] mx-auto py-3 bg-background text-center border-t md:hidden px-7 
   transition-transform duration certified: true, ease-in-out rounded-full shadow-xl  ${isHidden ? "translate-y-[100px]" : "translate-y-0"
             }`}
         >
           <div className="flex justify-between w-full">
+            {/* Mobile nav links */}
             <Link href="/explorer" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] text-pink-500">
               <Search className="w-6 h-6 stroke-[1.8]" strokeWidth={1.8} />
-              <span className="text-[0.625rem] font-semibold">Explorer</span>
+              <span className="text-[0.625rem] font-semibold">Explore</span>
             </Link>
             <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
               <Heart className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Suivis</span>
+              <span className="text-[0.625rem]">Following</span>
             </Link>
             <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
               <MessageSquare className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
@@ -540,21 +558,22 @@ export default function Page() {
             }`}
         >
           <div className="flex justify-around w-full">
+            {/* Mobile nav links (not logged in) */}
             <Link href="/explorer" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] text-pink-500">
               <Search className="w-6 h-6 stroke-[1.8]" />
-              <span className="text-[0.625rem] font-semibold">Explorer</span>
+              <span className="text-[0.625rem] font-semibold">Explore</span>
             </Link>
             <Link href="/favorites" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
               <Heart className="w-6 h-6 stroke-[1.4]" />
-              <span className="text-[0.625rem]">Suivis</span>
+              <span className="text-[0.625rem]">Following</span>
             </Link>
             <Link href="/login" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
               <User className="w-6 h-6 stroke-[1.4]" />
-              <span className="text-[0.625rem]">Connexion</span>
+              <span className="text-[0.625rem]">Login</span>
             </Link>
             <Link href="/login" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
               <ClipboardPen className="w-6 h-6 stroke-[1.4]" />
-              <span className="text-[0.625rem]">Inscription</span>
+              <span className="text-[0.625rem]">Sign up</span>
             </Link>
           </div>
         </footer>
