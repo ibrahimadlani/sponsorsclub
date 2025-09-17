@@ -1,10 +1,18 @@
 "use client";
 
+/**
+ * VerifyEmailPage
+ *
+ * Reads the `token` query param and calls the backend to verify the user's email.
+ * On success or error, shows a toast and redirects to the login page.
+ */
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Suspense } from "react";
+import { verifyEmail as verifyEmailAPI } from "@/lib/api";
 
+// Suspense-friendly inner component to access search params
 function VerifyEmailComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -19,25 +27,15 @@ function VerifyEmailComponent() {
 
     async function verifyEmail() {
       try {
-        const response = await fetch(`http://172.20.10.8:8001/api/auth/verify-email/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          toast.success("Email vérifié avec succès !");
-          router.push("/login");
-        } else {
-          toast.error(data.error || "Échec de la vérification.");
-          router.push("/login");
-        }
+        await verifyEmailAPI(token);
+        toast.success("Email vérifié avec succès !");
+        router.push("/login");
       } catch (error) {
-        toast.error("Erreur du serveur. Réessayez plus tard.");
+        if (error?.status === 400) {
+          toast.error("Jeton invalide ou expiré.");
+        } else {
+          toast.error("Erreur du serveur. Réessayez plus tard.");
+        }
         router.push("/login");
       }
     }

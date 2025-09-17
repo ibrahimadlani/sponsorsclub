@@ -1,0 +1,19 @@
+[MASTER]
+ignore = migrations
+
+[MESSAGES CONTROL]
+disable =
+    missing-module-docstring,
+    duplicate-code,
+    too-few-public-methods,
+    too-many-ancestors
+
+[TYPECHECK]
+generated-members = objects,DoesNotExist,style.*,style.SUCCESS,style.MIGRATE_HEADING
+ignored-classes = rest_framework.serializers.Serializer,rest_framework.serializers.ModelSerializer,rest_framework.serializers.SerializerMetaclass,rest_framework.viewsets.ViewSet,rest_framework.viewsets.GenericViewSet
+
+[FORMAT]
+max-line-length = 100
+
+[BASIC]
+no-docstring-rgx = ^.*Meta$

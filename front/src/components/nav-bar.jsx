@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { Map, Shield, ShieldHalf, User } from "lucide-react";
+import { Building, Map, Shield, ShieldHalf, User, Search } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -67,13 +68,18 @@ const components = [
  * @returns {JSX.Element} The rendered navigation menu.
  */
 export function NavMenu() {
+  const pathname = usePathname();
   return (
-    <NavigationMenu>
+    <div>
+    <NavigationMenu className="flex-col">
       <NavigationMenuList>
         {/* Athletes Link */}
         <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <Link href="/athletes" legacyBehavior passHref>
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle()}
+              data-active={pathname.startsWith("/athletes") ? "true" : undefined}
+            >
               <User className="h-4 w-4 me-2" />
               Athlètes
             </NavigationMenuLink>
@@ -82,13 +88,31 @@ export function NavMenu() {
 
         {/* Teams Link */}
         <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <Link href="/teams" legacyBehavior passHref>
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle()}
+              data-active={pathname.startsWith("/teams") ? "true" : undefined}
+            >
               <ShieldHalf className="h-4 w-4 me-2" />
               Équipes
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
+
+         {/* Organisations Link */}
+         <NavigationMenuItem>
+          <Link href="/organisations" legacyBehavior passHref>
+            <NavigationMenuLink 
+              className={navigationMenuTriggerStyle()}
+              data-active={pathname.startsWith("/organisations") ? "true" : undefined}
+            >
+              <Building className="h-4 w-4 me-2" />
+              Organisations
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+
+    
 
         {/* Maps Dropdown Menu */}
         {/* <NavigationMenuItem>
@@ -130,7 +154,50 @@ export function NavMenu() {
           </NavigationMenuContent>
         </NavigationMenuItem> */}
       </NavigationMenuList>
+      {/*  <div className="flex items-center border rounded-xl pr-4  shadow-lg w-full mx-auto mt-10 mb-9">
+        <div className="flex flex-col pl-8 pr-12 py-3 text-left rounded-xl border-2 border-transparent focus-within:border-pink-600 border- transition-all duration-200">
+          <label className="font-semibold text-xs mb-1">Disciplines</label>
+
+          <input
+            type="text"
+            placeholder="Rechercher par disciplines"
+            className="flex-3 focus:outline-none text-sm w-48 placeholder-gray-500 bg-transparent"
+          />
+        </div>
+        
+        <span className=" h-6 border-l border"></span>
+
+        <div className="flex flex-col pl-8 pr-12 py-3 text-left rounded-xl border-2 border-transparent focus-within:border-pink-600 border- transition-all duration-200">
+          <label className="font-semibold text-xs">Influence</label>
+
+          <input
+            type="text"
+            placeholder="Rechercher par influence"
+            className="flex-3 focus:outline-none text-sm w-48 placeholder-gray-500 bg-transparent"
+          />
+        </div>
+        
+
+        <span className=" h-6 border-l border"></span>
+
+        <div className="flex flex-col pl-8 pr-12 py-3 text-left rounded-xl border-2 border-transparent focus-within:border-pink-600 transition-all duration-200 me-2">
+          <label className="font-semibold text-xs">Influence</label>
+
+          <input
+            type="text"
+            placeholder="Rechercher une destination"
+            className="flex-3 focus:outline-none text-sm w-48 placeholder-gray-500 bg-transparent"
+          />
+
+          
+        </div>
+
+        <button className=" flex justify-center items-center bg-pink-600 text-white rounded-xl hover:bg-pink-700 transition h-12 w-12 -mr-1">
+          <Search className="h-4 w-12" />
+        </button>
+      </div>*/}
     </NavigationMenu>
+    </div>
   );
 }
 

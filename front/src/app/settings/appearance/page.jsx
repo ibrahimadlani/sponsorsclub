@@ -1,4 +1,8 @@
 "use client";
+/**
+ * Settings > Appearance
+ * Theme and UI appearance preferences form.
+ */
 
 import { Separator } from "@/components/ui/separator"
 import { AppearanceForm } from "@/components/forms/appearance-form"

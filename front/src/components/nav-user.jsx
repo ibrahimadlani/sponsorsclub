@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   LogOut,
   Sparkles,
@@ -16,6 +16,7 @@ import {
   LogIn,
   AlignJustify,
   ClipboardPen,
+  Globe,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation"; // Next.js router for redirection
@@ -39,6 +40,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { LanguageCurrencyModal } from "@/components/language-currency-modal";
 
 /**
  * NavUser Component
@@ -55,6 +57,7 @@ export function NavUser({ user }) {
   const { isMobile } = useSidebar();
   const router = useRouter(); // For navigation
   const { theme, setTheme } = useTheme();
+  const [isLanguageCurrencyModalOpen, setIsLanguageCurrencyModalOpen] = useState(false);
 
   /**
    * Handles user logout by clearing tokens and redirecting to the login page.
@@ -72,35 +75,61 @@ export function NavUser({ user }) {
   };
 
   return (
-    <SidebarMenu className="flex justify-end">
+    <SidebarMenu className="flex justify-end flex-row items-center gap-3 d-none">
+      {/* Call to Action link */}
+      {!user && (
+        <a
+          href="/sponsor"
+          className="ml-3 text-sm hover:no-underline transition-colors"
+          style={{ alignSelf: 'center' }}
+        >
+          <div className="rounded-full hover:bg-muted/70 dark:hover:bg-muted/90 transition-colors h-10  px-3 lg:flex justify-center items-center font-medium hidden">
+            Devenir un <span className="font-semibold text-pink-600 ms-1">Sponsor</span>
+          </div>
+        </a>
+      )}
+      {!user && (
+        <div 
+          className="rounded-full hover:bg-muted/70 dark:hover:bg-muted/90 transition-colors h-10 w-10 flex justify-center items-center cursor-pointer"
+          onClick={() => setIsLanguageCurrencyModalOpen(true)}
+        >
+          <Globe className="h-4 w-4" />
+        </div>
+      )}
       
       <SidebarMenuItem className="relative">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="relative data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground !ring-0"
+              className="relative data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground !ring-0 flex !hover:bg-transparent !bg-transparent hover:!bg-transparent"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                {user ? (
-                  <>
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">
-                      {user.first_name?.charAt(0) || "U"}
-                      {user.last_name?.charAt(0) || ""}
-                    </AvatarFallback>
-                  </>
-                ) : (
-                  <AvatarFallback className="rounded-lg">
-                    <AlignJustify className="h-5 w-5" />
-                  </AvatarFallback>
-                )}
-              </Avatar>
+              <div className="flex items-center gap-1.5 rounded-lg border border-black/10 dark:border-white/10 px-1.5 py-1 transition-colors hover:bg-muted/60 dark:hover:bg-muted/80">
+                {/* Hamburger icon next to avatar */}
+                <div className="rounded-full h-7 w-7 flex items-center justify-center text-muted-foreground">
+                  <AlignJustify className="h-4 w-4" />
+                </div>
+                <Avatar className="rounded-full h-7 w-7 ring-1 ring-black/10 dark:ring-white/10">
+                  {user ? (
+                    <>
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback className="rounded-full text-xs flex items-center justify-center bg-black/10 dark:bg-white/10 text-foreground">
+                        {user.first_name?.charAt(0) || "U"}
+                        {user.last_name?.charAt(0) || ""}
+                      </AvatarFallback>
+                    </>
+                  ) : (
+                    <AvatarFallback className="rounded-full bg-transparent" />
+                  )}
+                </Avatar>
+              </div>
             </SidebarMenuButton>
+            
           </DropdownMenuTrigger>
+          
 
           <DropdownMenuContent
-            className="absolute right-0 top-2 w-56 min-w-56 rounded-lg shadow-lg z-50"
+            className="absolute right-0 top-2 w-56 min-w-56 rounded-lg shadow-lg z-50 bg-background border border-border"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -141,14 +170,18 @@ export function NavUser({ user }) {
 
                 {/* Navigation Options */}
                 <DropdownMenuGroup>
-                  <DropdownMenuItem className="font-semibold">
-                    <Search className="mr-2 h-4 w-4" />
-                    Explorer
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="font-semibold">
-                    <Heart className="mr-2 h-4 w-4" />
-                    Suivis
-                  </DropdownMenuItem>
+                  <Link href="/" passHref className="font-semibold">
+                    <DropdownMenuItem>
+                      <Search className="mr-2 h-4 w-4" />
+                      Explorer
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/followed" passHref className="font-semibold">
+                    <DropdownMenuItem>
+                      <Heart className="mr-2 h-4 w-4" />
+                      Suivis
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem className="font-semibold">
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Messsages
@@ -186,6 +219,12 @@ export function NavUser({ user }) {
                 <DropdownMenuItem>
                   <LifeBuoy className="mr-2 h-4 w-4" />
                   Centre d&apos;aide
+                </DropdownMenuItem>
+
+                {/* Language and Currency */}
+                <DropdownMenuItem onClick={() => setIsLanguageCurrencyModalOpen(true)}>
+                  <Globe className="mr-2 h-4 w-4" />
+                  Langue et Devise
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
@@ -230,11 +269,23 @@ export function NavUser({ user }) {
                   <LifeBuoy className="mr-2 h-4 w-4" />
                   Centre d&apos;aide
                 </DropdownMenuItem>
+
+                {/* Language and Currency */}
+                <DropdownMenuItem onClick={() => setIsLanguageCurrencyModalOpen(true)}>
+                  <Globe className="mr-2 h-4 w-4" />
+                  Langue et Devise
+                </DropdownMenuItem>
               </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+
+      {/* Language and Currency Modal */}
+      <LanguageCurrencyModal 
+        open={isLanguageCurrencyModalOpen} 
+        onOpenChange={setIsLanguageCurrencyModalOpen} 
+      />
     </SidebarMenu>
   );
 }

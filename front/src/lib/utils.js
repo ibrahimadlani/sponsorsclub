@@ -44,3 +44,12 @@ export function formatNumber(num) {
   
   return num.toString(); // Retourne le nombre tel quel si < 1000
 }
+
+// Format a price in EUR like "50 000€" (no decimals, thin space thousands)
+export function formatPriceEUR(value) {
+  if (value == null) return "0€";
+  const num = typeof value === 'number' ? value : parseFloat(String(value).replace(/\s|€/g, ''));
+  if (Number.isNaN(num)) return `${value}€`;
+  const formatted = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(num);
+  return `${formatted}€`;
+}

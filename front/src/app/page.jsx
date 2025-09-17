@@ -1,11 +1,20 @@
 "use client";
 
+/**
+ * Home Page
+ *
+ * Landing that showcases featured athletes with a carousel per card,
+ * plus growth/radar charts. Includes desktop header, desktop footer,
+ * and a mobile sticky nav footer. Uses static demo data.
+ */
+
 // React Imports
 import { useState, useEffect, useContext } from "react";
 
 // Next.js Imports
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 // Third-Party Library Imports
 import {
@@ -28,7 +37,7 @@ import {
 // UI Components
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselDots } from "@/components/ui/carousel";
 import Logo from "@/components/ui/logo";
 import Skeleton from "@/components/skeleton-item";
 
@@ -45,7 +54,15 @@ import RadarChartComponent from "@/components/radar-chart";
 import AuthContext from "@/context/AuthContext";
 
 // Utility Functions
-import { handleScroll, formatNumber } from "@/lib/utils";
+import { handleScroll, formatNumber, formatPriceEUR } from "@/lib/utils";
+const safeFormatPrice = (value) => {
+  if (typeof formatPriceEUR === 'function') return formatPriceEUR(value);
+  try {
+    const num = typeof value === 'number' ? value : parseFloat(String(value).replace(/\s|€/g, ''));
+    if (Number.isNaN(num)) return `${value}€`;
+    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(num) + '€';
+  } catch { return `${value}€`; }
+};
 
 
 // Athlete data array with profile URLs and social stats
@@ -322,6 +339,8 @@ const ItemComponent = ({ item }) => {
             {/* Hide carousel navigation buttons on mobile */}
             <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration certified: true, z-30 hidden md:flex" />
             <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration certified: true, z-30 hidden md:flex" />
+            {/* Progress bullets */}
+            <CarouselDots />
           </Carousel>
         </div>
       ) : (
@@ -357,8 +376,8 @@ const ItemComponent = ({ item }) => {
         </div>
         {/* Price info */}
         <p className="font-normal text-sm leading-5">
-          From {" "}
-          <span className="font-medium text-base">{item.price}</span>€
+          À partir de {" "}
+          <span className="font-medium text-base">{safeFormatPrice(item.price)}</span>
         </p>
       </div>
     </div>
@@ -392,6 +411,8 @@ export default function Page() {
   const [isHidden, setIsHidden] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const pathname = usePathname();
+  const isExplorer = pathname === "/" || ["/explorer", "/athletes", "/teams", "/organisations"].some((p) => pathname.startsWith(p));
 
   // Simulate API call to fetch data
   useEffect(() => {
@@ -430,16 +451,7 @@ export default function Page() {
             <div className="relative max-w-md flex items-center md:hidden">
               <Logo className="md:hidden mx-auto" />
             </div>
-            {/* Call to Action link for mobile (always visible, inline style) */}
-            <div className="absolute right-2 top-4 md:hidden">
-              <a
-                href="/sponsor"
-                className="text-pink-600 font-semibold text-xs hover:underline transition-colors"
-                style={{ padding: 0, borderRadius: 0, boxShadow: 'none' }}
-              >
-                Sponsor
-              </a>
-            </div>
+
             {/* User menu (right) and CTA */}
             <div className="absolute flex right-0 top-4 md:right-12 2xl:right-24 gap-1 items-center ">
                 <NavUser user={user} />
@@ -474,26 +486,25 @@ export default function Page() {
             </span>
             <span> · </span>
             <Link href="/privacy" className="hover:underline">
-              Privacy
+              Confidentialité
             </Link>
             <span> · </span>
             <Link href="/terms-of-services" className="hover:underline">
-              Terms of Service
+              Conditions générales
             </Link>
             <span> · </span>
             <Link href="/sitemap" className="hover:underline">
-              Sitemap
+              Plan du site
             </Link>
             <span> · </span>
             <Link href="/about" className="hover:underline">
-              About
+              À propos
             </Link>
           </div>
           <div className="flex  items-center gap-2.5">
-
             <Link href="/privacy" className="font-semibold flex items-center gap-1 hover:underline  whitespace-nowrap">
               <Globe className="w-4 h-4" />
-              English (EN)
+              Français
             </Link>
             <span> · </span>
             <Link href="/privacy" className="font-semibold flex items-center gap-1 hover:underline  whitespace-nowrap">
@@ -502,8 +513,7 @@ export default function Page() {
             </Link>
             <span> · </span>
             <Link href="/privacy" className="font-semibold flex items-center gap-1 hover:underline  whitespace-nowrap">
-
-              Help & Resources
+              Aide & ressources
               <ChevronDown className="w-4 h-4" />
             </Link>
           </div>
@@ -512,70 +522,61 @@ export default function Page() {
         {/* ${isHidden ? "translate-y-24" : "translate-y-0"} */}
         <div className="flex w-full justify-center">
           {/* Button to toggle map on desktop */}
-          <Button className={`fixed bottom-16 hidden md:flex  py-0 text-xs bg-foreground rounded-full text-background shadow-xl  items-center justify-center z-50  font-semibold `} onClick={() => setShowMap(!showMap)}>
+          {/* <Button className={`fixed bottom-16 hidden md:flex  py-0 text-xs bg-foreground rounded-full text-background shadow-xl  items-center justify-center z-50  font-semibold `} onClick={() => setShowMap(!showMap)}>
             Show map
             <MapIcon className="w-4 h-4" />
-          </Button>
+          </Button> */}
           {/* Button to toggle map on mobile */}
-          <Button className={`transition-transform duration certified: true, ease-in-out fixed bottom-24 md:hidden py-0 text-xs bg-foreground rounded-full text-background shadow-xl flex items-center justify-center z-50  font-semibold ${isHidden ? "translate-y-[75px]" : "translate-y-0"} `}>
+          {/* <Button className={`transition-transform duration certified: true, ease-in-out fixed bottom-24 md:hidden py-0 text-xs bg-foreground rounded-full text-background shadow-xl flex items-center justify-center z-50  font-semibold ${isHidden ? "translate-y-[75px]" : "translate-y-0"} `}>
             Show map
             <MapIcon className="w-4 h-4" />
-          </Button>
+          </Button> */}
         </div>
         {/* Mobile sticky navigation/footer */}
         <footer
-          className={`fixed bottom-5 left-2.5 right-2.5 w-auto max-w-[560px] mx-auto py-3 bg-background text-center border-t md:hidden px-7 
-  transition-transform duration certified: true, ease-in-out rounded-full shadow-xl  ${isHidden ? "translate-y-[100px]" : "translate-y-0"
-            }`}
+          className={`fixed bottom-5 left-2.5 right-2.5 w-auto max-w-[560px] mx-auto py-3 bg-background text-center border-t md:hidden px-7 rounded-full shadow-xl transition-transform ease-in-out ${isHidden ? "translate-y-[100px]" : "translate-y-0"}`}
         >
-          <div className="flex justify-between w-full">
-            {/* Mobile nav links */}
-            <Link href="/explorer" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] text-pink-500">
-              <Search className="w-6 h-6 stroke-[1.8]" strokeWidth={1.8} />
-              <span className="text-[0.625rem] font-semibold">Explore</span>
-            </Link>
-            <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
-              <Heart className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Following</span>
-            </Link>
-            <Link href="/messages" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
-              <MessageSquare className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Messages</span>
-            </Link>
-            <Link href="/collab" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
-              <Handshake className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Collab.</span>
-            </Link>
-            <Link href="/profile" className="flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[50px] opacity-70">
-              <User className="w-6 h-6 stroke-[1.4]" strokeWidth={1.4} />
-              <span className="text-[0.625rem]">Profile</span>
-            </Link>
-          </div>
-        </footer>
-        <footer
-          className={`fixed bottom-5 left-2.5 right-2.5 w-auto max-w-[560px] mx-auto py-3 bg-background text-center border-t md:hidden px-7 
-          transition-transform ease-in-out rounded-full shadow-xl ${isHidden ? "translate-y-[100px]" : "translate-y-0"
-            }`}
-        >
-          <div className="flex justify-around w-full">
-            {/* Mobile nav links (not logged in) */}
-            <Link href="/explorer" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] text-pink-500">
-              <Search className="w-6 h-6 stroke-[1.8]" />
-              <span className="text-[0.625rem] font-semibold">Explore</span>
-            </Link>
-            <Link href="/favorites" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
-              <Heart className="w-6 h-6 stroke-[1.4]" />
-              <span className="text-[0.625rem]">Following</span>
-            </Link>
-            <Link href="/login" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
-              <User className="w-6 h-6 stroke-[1.4]" />
-              <span className="text-[0.625rem]">Login</span>
-            </Link>
-            <Link href="/login" className="flex flex-col items-center gap-0.5 font-medium w-full max-w-[50px] opacity-70">
-              <ClipboardPen className="w-6 h-6 stroke-[1.4]" />
-              <span className="text-[0.625rem]">Sign up</span>
-            </Link>
-          </div>
+          {user ? (
+            <div className="flex justify-between w-full">
+              {/* Connecté: Explorer, Suivis, Collab, Messages, Profile */}
+              <Link href="/" className={`flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[56px] ${isExplorer ? 'text-pink-500' : 'opacity-70'}`}>
+                <Search className="w-6 h-6" strokeWidth={isExplorer ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${isExplorer ? 'font-bold' : 'font-medium'}`}>Explorer</span>
+              </Link>
+              <Link href="/followed" className={`flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[56px] ${pathname.startsWith('/followed') ? 'text-pink-500' : 'opacity-70'}`}>
+                <Heart className="w-6 h-6" strokeWidth={pathname.startsWith('/followed') ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${pathname.startsWith('/followed') ? 'font-bold' : 'font-medium'}`}>Suivis</span>
+              </Link>
+              <Link href="/collab" className={`flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[56px] ${pathname.startsWith('/collab') ? 'text-pink-500' : 'opacity-70'}`}>
+                <Handshake className="w-6 h-6" strokeWidth={pathname.startsWith('/collab') ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${pathname.startsWith('/collab') ? 'font-bold' : 'font-medium'}`}>Collab</span>
+              </Link>
+              <Link href="/messages" className={`flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[56px] ${pathname.startsWith('/messages') ? 'text-pink-500' : 'opacity-70'}`}>
+                <MessageSquare className="w-6 h-6" strokeWidth={pathname.startsWith('/messages') ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${pathname.startsWith('/messages') ? 'font-bold' : 'font-medium'}`}>Messages</span>
+              </Link>
+              <Link href="/settings" className={`flex flex-col items-center gap-0.5 font-medium antialiased w-full max-w-[56px] ${pathname.startsWith('/settings') ? 'text-pink-500' : 'opacity-70'}`}>
+                <User className="w-6 h-6" strokeWidth={pathname.startsWith('/settings') ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${pathname.startsWith('/settings') ? 'font-bold' : 'font-medium'}`}>Profile</span>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex justify-center sm:justify-around gap-6 sm:gap-6 w-full">
+              {/* Déconnecté: Explorer, Suivis, Connexion */}
+              <Link href="/explorer" className={`flex flex-col items-center gap-0.5 font-medium w-full max-w-[56px] ${isExplorer ? 'text-pink-500' : 'opacity-70'}`}>
+                <Search className="w-6 h-6" strokeWidth={isExplorer ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${isExplorer ? 'font-bold' : 'font-medium'}`}>Explorer</span>
+              </Link>
+              <Link href="/followed" className={`flex flex-col items-center gap-0.5 font-medium w-full max-w-[56px] ${pathname.startsWith('/followed') ? 'text-pink-500' : 'opacity-70'}`}>
+                <Heart className="w-6 h-6" strokeWidth={pathname.startsWith('/followed') ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${pathname.startsWith('/followed') ? 'font-bold' : 'font-medium'}`}>Suivis</span>
+              </Link>
+              <Link href="/login" className={`flex flex-col items-center gap-0.5 font-medium w-full max-w-[56px] ${pathname.startsWith('/login') ? 'text-pink-500' : 'opacity-70'}`}>
+                <User className="w-6 h-6" strokeWidth={pathname.startsWith('/login') ? 2.5 : 1.5} />
+                <span className={`text-[0.625rem] ${pathname.startsWith('/login') ? 'font-bold' : 'font-medium'}`}>Connexion</span>
+              </Link>
+            </div>
+          )}
         </footer>
       </SidebarInset>
     </SidebarProvider>

@@ -1,5 +1,6 @@
 
-const API_BASE_URL = "http://127.0.0.1:8001";
+// Prefer env override if provided, fallback to localhost
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8001";
 
 // 🔹 Reset Password Request
 export const resetPassword = async (email) => {
@@ -49,6 +50,72 @@ export const registerUser = async (userData) => {
   }
 
   return res.json();
+};
+
+// 🔹 Verify Email
+export const verifyEmail = async (token) => {
+  const res = await fetch(`${API_BASE_URL}/api/auth/verify-email/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.error || "Échec de la vérification.");
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+};
+
+// ---------- Public data endpoints ----------
+
+// Helper: attach Authorization header if accessToken is available (for user-scoped fields like is_followed)
+const withAuthIfAvailable = () => {
+  try {
+    if (typeof window === 'undefined') return {};
+    const token = localStorage.getItem("accessToken");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+};
+
+export const getAthletes = async () => {
+  const res = await fetch(`${API_BASE_URL}/api/athletes/`, {
+    cache: "no-store",
+    headers: { ...withAuthIfAvailable() },
+  });
+  if (!res.ok) throw new Error("Impossible de charger les athlètes");
+  const data = await res.json();
+  // If paginated (DRF), return results, else assume array
+  return Array.isArray(data) ? data : data.results || [];
+};
+
+export const getAthleteBySlug = async (slugOrId) => {
+  // Try fetch by UUID first, else fallback to list and match by profile_url
+  const isUuid = /[0-9a-fA-F-]{36}/.test(slugOrId);
+  if (isUuid) {
+    const res = await fetch(`${API_BASE_URL}/api/athletes/${slugOrId}/`, {
+      cache: "no-store",
+      headers: { ...withAuthIfAvailable() },
+    });
+    if (res.ok) return res.json();
+  }
+  const list = await getAthletes();
+  return list.find((a) => a.profile_url === `/athletes/${slugOrId}` || a.id === slugOrId) || null;
+};
+
+export const getAthletesPage = async (limit = 12, offset = 0) => {
+  const url = `${API_BASE_URL}/api/athletes/?limit=${limit}&offset=${offset}`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("Impossible de charger les athlètes");
+  const data = await res.json();
+  if (Array.isArray(data)) {
+    // non-paginated fallback
+    return { results: data.slice(offset, offset + limit), next: data.length > offset + limit ? url : null };
+  }
+  return { results: data.results || [], next: data.next || null };
 };
 
 export const login = async (email, password) => {
@@ -196,11 +263,11 @@ export const requestPasswordReset = async (email) => {
 };
 
 // 🔹 Change Password
-export const changePassword = async (oldPassword, newPassword) => {
+export const changePassword = async (oldPassword, newPassword, confirmNewPassword) => {
   let token = localStorage.getItem("accessToken");
   if (!token) throw new Error("User not authenticated");
 
-  let res = await fetch(`${API_BASE_URL}/api/auth/password/change/`, {
+  let res = await fetch(`${API_BASE_URL}/api/auth/change-password/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -209,12 +276,13 @@ export const changePassword = async (oldPassword, newPassword) => {
     body: JSON.stringify({
       old_password: oldPassword,
       new_password: newPassword,
+      confirm_new_password: confirmNewPassword ?? newPassword,
     }),
   });
 
   if (res.status === 401) {
     token = await refreshAccessToken();
-    res = await fetch(`${API_BASE_URL}/api/auth/password/change/`, {
+    res = await fetch(`${API_BASE_URL}/api/auth/change-password/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -223,10 +291,44 @@ export const changePassword = async (oldPassword, newPassword) => {
       body: JSON.stringify({
         old_password: oldPassword,
         new_password: newPassword,
+        confirm_new_password: confirmNewPassword ?? newPassword,
       }),
     });
   }
 
   if (!res.ok) throw new Error("Password change failed");
+  return res.json();
+};
+
+// 🔹 Delete account (Right to erasure)
+export const deleteAccount = async () => {
+  let token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("User not authenticated");
+
+  let res = await fetch(`${API_BASE_URL}/api/privacy/erase/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 401) {
+    token = await refreshAccessToken();
+    res = await fetch(`${API_BASE_URL}/api/privacy/erase/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  if (!res.ok) {
+    let msg = "Failed to delete account";
+    try { const data = await res.json(); msg = data?.message || msg; } catch {}
+    throw new Error(msg);
+  }
+
   return res.json();
 };

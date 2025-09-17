@@ -179,7 +179,9 @@ const CarouselPrevious = React.forwardRef(({ className, variant = "outline", siz
         orientation === "horizontal"
           ? "left-2 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        !canScrollPrev ? "!opacity-0 cursor-not-allowed" : "",
+        // Ensure disabled buttons stay hidden off-hover, visible (40%) on hover
+        // and block clicks from reaching elements underneath (override base disabled:pointer-events-none)
+        "disabled:!opacity-0 group-hover:disabled:!opacity-40 disabled:cursor-not-allowed disabled:!pointer-events-auto",
         className
       )}
       disabled={!canScrollPrev}
@@ -209,7 +211,9 @@ const CarouselNext = React.forwardRef(({ className, variant = "outline", size = 
         orientation === "horizontal"
           ? "right-2 top-1/2 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        !canScrollNext ? "!opacity-0 cursor-not-allowed" : "",
+        // Ensure disabled buttons stay hidden off-hover, visible (40%) on hover
+        // and block clicks from reaching elements underneath (override base disabled:pointer-events-none)
+        "disabled:!opacity-0 group-hover:disabled:!opacity-40 disabled:cursor-not-allowed disabled:!pointer-events-auto",
         className
       )}
       disabled={!canScrollNext}
@@ -227,3 +231,57 @@ const CarouselNext = React.forwardRef(({ className, variant = "outline", size = 
 CarouselNext.displayName = "CarouselNext";
 
 export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext };
+
+// Progress bullets indicator for Embla Carousel
+const CarouselDots = ({ className }) => {
+  const { api } = useCarousel();
+  const [count, setCount] = React.useState(0);
+  const [selected, setSelected] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!api) return;
+
+    const onReInit = () => {
+      try {
+        setCount(api.scrollSnapList().length || 0);
+        setSelected(api.selectedScrollSnap() || 0);
+      } catch (_) {
+        setCount(0);
+        setSelected(0);
+      }
+    };
+    const onSelect = () => setSelected(api.selectedScrollSnap());
+
+    onReInit();
+    api.on("reInit", onReInit);
+    api.on("select", onSelect);
+    return () => {
+      api.off("reInit", onReInit);
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
+  if (!api || count <= 1) return null;
+
+  return (
+    <div className={cn(
+      "absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-30",
+      className
+    )}>
+      {Array.from({ length: count }).map((_, i) => (
+        <button
+          key={i}
+          type="button"
+          aria-label={`Aller au slide ${i + 1}`}
+          onClick={(e) => { e.stopPropagation(); api.scrollTo(i); }}
+          className={cn(
+            "h-1.5 rounded-full transition-all",
+            i === selected ? "w-3 bg-white shadow ring-1 ring-black/10" : "w-1.5 bg-white/70 hover:bg-white"
+          )}
+        />
+      ))}
+    </div>
+  );
+};
+
+export { CarouselDots };

@@ -1,4 +1,8 @@
 "use client";
+/**
+ * Settings > Display
+ * Toggles visibility of optional UI elements.
+ */
 
 import { Separator } from "@/components/ui/separator"
 import { DisplayForm } from "@/components/forms/display-form"

@@ -1,4 +1,8 @@
 "use client";
+/**
+ * Settings > Billing
+ * Billing/account plan management form.
+ */
 
 import { Separator } from "@/components/ui/separator"
 import { AccountForm } from "@/components/forms/account-form"

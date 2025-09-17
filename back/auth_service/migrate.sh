@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Collect static files (if needed)
-# /py/bin/python manage.py collectstatic --noinput
+# Collect static files (for WhiteNoise to serve admin CSS/JS)
+/py/bin/python manage.py collectstatic --noinput
 
 # Run migrations
 /py/bin/python manage.py wait_for_db
-/py/bin/python manage.py makemigrations
+/py/bin/python manage.py makemigrations --noinput
 /py/bin/python manage.py migrate --noinput
 
 # Create superuser with email as the unique identifier
@@ -14,8 +14,8 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 email = "$DJANGO_SUPERUSER_EMAIL"
 password = "$DJANGO_SUPERUSER_PASSWORD"
-first_name = "Admin"
-last_name = "User"
+first_name = "$DJANGO_SUPERUSER_FIRST_NAME"
+last_name = "$DJANGO_SUPERUSER_LAST_NAME"
 
 # Check if user already exists before creating
 if not User.objects.filter(email=email).exists():

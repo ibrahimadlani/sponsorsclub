@@ -66,9 +66,10 @@ export function LoginFormContent({ className, ...props }) {
       console.log("Login Successful:", response);
       router.push("/");
     } catch (error) {
-      const code = error.message || "UNKNOWN_ERROR";
-      toast.error(errorMessages[code] || "Erreur inconnue");
-      console.error("Login Failed:", error.message || "Invalid credentials.");
+      // Montre le message précis renvoyé par l'API (detail/error/message) sinon fallback FR
+      const msg = error?.message || "Identifiants invalides.";
+      toast.error(msg);
+      console.error("Login Failed:", msg);
     } finally {
       setLoading(false);
     }
@@ -168,6 +169,7 @@ export function LoginFormContent({ className, ...props }) {
                   </AnimatePresence>
                   <a
                     href="/reset-password"
+                    tabIndex={-1}
                     className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     Mot de passe oublié?

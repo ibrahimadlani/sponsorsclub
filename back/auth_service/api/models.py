@@ -1,6 +1,4 @@
-"""
-Models for User and Address objects
-"""
+""" Models for User and Address objects"""
 
 import uuid
 from django.db import models
@@ -100,6 +98,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     address = models.CharField(max_length=255, blank=True, null=True)
     country = models.CharField(max_length=2, blank=True, null=True)
     language = models.CharField(max_length=2, blank=True, null=True)
+    currency = models.CharField(max_length=3, blank=True, null=True)
     timezone = models.CharField(max_length=50, blank=True, null=True)
 
     # Subscription
@@ -256,3 +255,314 @@ class Address(models.Model):
             f"{self.formatted_address} ("
             f"{self.country})"
         )
+
+
+class Athlete(models.Model):
+    """
+    Athlete model representing public athlete profiles.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # Link to a user account so athletes can log in and manage their profile
+    user = models.OneToOneField(
+        "api.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="athlete_profile",
+    )
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=255)
+    category = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    is_carousel = models.BooleanField(default=False)
+    profile_url = models.CharField(max_length=255)
+    certified = models.BooleanField(default=False)
+    bio = models.TextField(max_length=50, blank=True, null=True)
+    level = models.CharField(max_length=50, default="PRO")
+    nationality = models.CharField(max_length=100, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+
+    # Subscriber counts
+    subscribers_facebook = models.PositiveIntegerField(default=0)
+    subscribers_instagram = models.PositiveIntegerField(default=0)
+    subscribers_youtube = models.PositiveIntegerField(default=0)
+
+    # Images
+    image1 = models.CharField(max_length=255, blank=True, null=True)
+    image2 = models.CharField(max_length=255, blank=True, null=True)
+    image3 = models.CharField(max_length=255, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+# ========== MVP additions: Companies, Media, Social, Follow, Feed, Messaging ==========
+
+
+class CompanyProfile(models.Model):
+    """Company/Brand profile linked to a User account (1-1)."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(
+        "api.User",
+        on_delete=models.CASCADE,
+        related_name="company_profile",
+    )
+    name = models.CharField(max_length=160)
+    slug = models.SlugField(max_length=180, unique=True)
+    website = models.URLField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    verified = models.BooleanField(default=False)
+    logo_url = models.CharField(max_length=512, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """Default ordering for company profiles."""
+
+        ordering = ["name"]
+
+    def __str__(self):
+        return str(self.name)
+
+
+class SportCategory(models.Model):
+    """Sport category metadata used to classify athletes."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=120, unique=True)
+    slug = models.SlugField(max_length=140, unique=True)
+    emoji = models.CharField(max_length=8, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        """Default ordering for sport categories."""
+
+        ordering = ["name"]
+
+    def __str__(self):
+        return str(self.name)
+
+
+class MediaAsset(models.Model):
+    """Reusable media asset stored as an external URL."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    url = models.CharField(max_length=512)
+    alt_text = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.url)
+
+
+class AthleteImage(models.Model):
+    """Mapping between athletes and ordered media assets."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    athlete = models.ForeignKey("api.Athlete", on_delete=models.CASCADE, related_name="media")
+    media = models.ForeignKey("api.MediaAsset", on_delete=models.CASCADE, related_name="+")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        """Order athlete media by configured display order."""
+
+        ordering = ["order"]
+        unique_together = [("athlete", "media")]
+
+
+SOCIAL_PLATFORM_CHOICES = [
+    ("instagram", "Instagram"),
+    ("facebook", "Facebook"),
+    ("youtube", "YouTube"),
+    ("tiktok", "TikTok"),
+]
+
+
+class SocialStat(models.Model):
+    """Follower statistics for an athlete on a given platform."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    athlete = models.ForeignKey(
+        "api.Athlete",
+        on_delete=models.CASCADE,
+        related_name="social_stats",
+    )
+    platform = models.CharField(max_length=20, choices=SOCIAL_PLATFORM_CHOICES)
+    followers = models.PositiveIntegerField(default=0)
+    username = models.CharField(max_length=120, blank=True, null=True)
+    profile_url = models.CharField(max_length=512, blank=True, null=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """Ensure one statistic per platform per athlete."""
+
+        unique_together = [("athlete", "platform")]
+
+    def __str__(self):
+        return f"{self.athlete.name} - {self.platform}: {self.followers}"
+
+
+class AthleteFollow(models.Model):
+    """Relationship linking users with the athletes they follow."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey("api.User", on_delete=models.CASCADE, related_name="follows")
+    athlete = models.ForeignKey(
+        "api.Athlete",
+        on_delete=models.CASCADE,
+        related_name="followers",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        """Prevent duplicate follow relationships and add indexes."""
+
+        unique_together = [("user", "athlete")]
+        indexes = [
+            models.Index(fields=["user"]),
+            models.Index(fields=["athlete"]),
+        ]
+
+    def __str__(self):
+        user_email = getattr(self.user, "email", "unknown")
+        return f"{user_email} -> {self.athlete.name}"
+
+
+ACTIVITY_TYPE_CHOICES = [
+    ("post", "Post"),
+    ("competition", "Competition"),
+    ("followers", "Followers Growth"),
+    ("trophy", "Trophy"),
+    ("photo", "Photo"),
+]
+
+
+class ActivityEvent(models.Model):
+    """Feed item describing an athlete activity or achievement."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    athlete = models.ForeignKey(
+        "api.Athlete",
+        on_delete=models.CASCADE,
+        related_name="activities",
+    )
+    type = models.CharField(max_length=20, choices=ACTIVITY_TYPE_CHOICES)
+
+    # Generic
+    text = models.TextField(blank=True, null=True)
+    images = models.ManyToManyField(
+        "api.MediaAsset",
+        related_name="activity_events",
+        blank=True,
+    )
+    platform = models.CharField(
+        max_length=20,
+        choices=SOCIAL_PLATFORM_CHOICES,
+        blank=True,
+        null=True,
+    )
+    happened_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Competition-specific
+    competition_title = models.CharField(max_length=255, blank=True, null=True)
+    competition_location = models.CharField(max_length=255, blank=True, null=True)
+    competition_date = models.DateField(blank=True, null=True)
+    competition_result = models.CharField(max_length=255, blank=True, null=True)
+
+    # Followers growth
+    followers_delta = models.IntegerField(blank=True, null=True)
+    followers_note = models.CharField(max_length=255, blank=True, null=True)
+
+    # Trophy
+    trophy_title = models.CharField(max_length=255, blank=True, null=True)
+    trophy_award = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        """Add indexes to optimise feed queries."""
+
+        indexes = [
+            models.Index(fields=["athlete", "happened_at"]),
+            models.Index(fields=["type", "happened_at"]),
+        ]
+        ordering = ["-happened_at"]
+
+    def __str__(self):
+        return f"{self.athlete.name} - {self.type} @ {self.happened_at}"
+
+
+class Conversation(models.Model):
+    """Conversation thread between two or more users."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    topic = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Conversation {self.id}"
+
+
+class ConversationParticipant(models.Model):
+    """Participant metadata associated with a conversation."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    conversation = models.ForeignKey(
+        "api.Conversation",
+        on_delete=models.CASCADE,
+        related_name="participants",
+    )
+    user = models.ForeignKey(
+        "api.User",
+        on_delete=models.CASCADE,
+        related_name="conversations",
+    )
+    unread_count = models.PositiveIntegerField(default=0)
+    is_muted = models.BooleanField(default=False)
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        """Ensure participants are unique per conversation."""
+
+        unique_together = [("conversation", "user")]
+
+
+class Message(models.Model):
+    """Message content exchanged within a conversation."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    conversation = models.ForeignKey(
+        "api.Conversation",
+        on_delete=models.CASCADE,
+        related_name="messages",
+    )
+    sender = models.ForeignKey(
+        "api.User",
+        on_delete=models.CASCADE,
+        related_name="sent_messages",
+    )
+    text = models.TextField(blank=True, null=True)
+    attachments = models.ManyToManyField(
+        "api.MediaAsset",
+        blank=True,
+        related_name="message_attachments",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_by = models.ManyToManyField(
+        "api.User",
+        blank=True,
+        related_name="read_messages",
+    )
+
+    class Meta:
+        """Index messages for faster chronological lookups."""
+
+        indexes = [models.Index(fields=["conversation", "created_at"])]
+
+    def __str__(self):
+        return f"Message {self.pk}"

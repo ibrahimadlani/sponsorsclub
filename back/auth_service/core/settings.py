@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -60,6 +61,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    # Enable pagination for collection endpoints
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 12,
 }
 
 WSGI_APPLICATION = "core.wsgi.application"
@@ -115,7 +119,13 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+# Where collectstatic will place files for WhiteNoise to serve
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Enable compressed manifest storage for cache-busting
+STORAGE_BACKEND = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = STORAGE_BACKEND
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -123,7 +133,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -170,3 +180,8 @@ EMAIL_USE_SSL = True  # SSL must be enabled for Zoho
 EMAIL_HOST_USER = str(os.environ.get("EMAIL_HOST_USER"))
 EMAIL_HOST_PASSWORD = str(os.environ.get("EMAIL_HOST_PASSWORD"))
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Brand/Email defaults
+BRAND_NAME = os.environ.get("BRAND_NAME", "SponsorsClub")
+BRAND_SITE_URL = os.environ.get("BRAND_SITE_URL", "http://localhost:3000")
+BRAND_LOGO_URL = os.environ.get("BRAND_LOGO_URL", "https://via.placeholder.com/120x32?text=SponsorsClub")

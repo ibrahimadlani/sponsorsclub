@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>{{ subject|default:"SponsorsClub" }}</title>
+    <style>
+      /* Reset */
+      html, body { margin:0 !important; padding:0 !important; height:100% !important; width:100% !important; }
+      * { -ms-text-size-adjust:100%; -webkit-text-size-adjust:100%; }
+      table, td { mso-table-lspace:0pt !important; mso-table-rspace:0pt !important; }
+      img { -ms-interpolation-mode:bicubic; }
+      a { text-decoration:none; }
+      /* Container */
+      .wrapper { width:100%; background:#f6f7f9; padding:24px 0; }
+      .container { max-width:600px; margin:0 auto; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+      .header { padding:20px 24px; border-bottom:1px solid #eee; }
+      .brand { display:flex; align-items:center; gap:12px; }
+      .brand img { height:28px; }
+      .brand-name { font-size:16px; font-weight:700; color:#111827; }
+      .content { padding:24px; color:#111827; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+      .btn { display:inline-block; background:#ec4899; color:#ffffff !important; padding:12px 18px; border-radius:999px; font-weight:600; }
+      .muted { color:#6b7280; font-size:13px; }
+      .footer { padding:20px 24px; border-top:1px solid #eee; text-align:center; color:#6b7280; font-size:12px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tr>
+          <td align="center">
+            <table role="presentation" class="container" cellspacing="0" cellpadding="0" border="0" width="100%">
+              <tr>
+                <td class="header">
+                  <div class="brand">
+                    {% if brand_logo_url %}
+                      <img src="{{ brand_logo_url }}" alt="{{ brand_name }}" />
+                    {% endif %}
+                    <span class="brand-name">{{ brand_name }}</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="content">
+                  {% block content %}{% endblock %}
+                </td>
+              </tr>
+              <tr>
+                <td class="footer">
+                  © {{ brand_name }} — <a href="{{ brand_site_url }}" style="color:#6b7280;">{{ brand_site_url }}</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+  </html>
+

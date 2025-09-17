@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/api"; // Import de la fonction API pour l'inscription
 import { toast } from "sonner"; // Pour les notifications toast
@@ -28,6 +28,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Règles de validation par indicatif
+const PHONE_RULES = {
+  "+33": { min: 9, max: 9, example: "ex: 6XXXXXXXX" }, // France (sans le 0)
+  "+1": { min: 10, max: 10, example: "ex: 415XXXXXXX" }, // USA/Canada
+  "+44": { min: 10, max: 10, example: "ex: 7XXXXXXXXX" }, // UK (mobile typique)
+};
+
 // 🔹 Définir le schéma de validation avec Zod
 const registerSchema = z
   .object({
@@ -35,7 +42,7 @@ const registerSchema = z
     last_name: z.string().min(2, "Le nom est requis"),
     email: z.string().email("Format d'email invalide"),
     phone_country_code: z.string().min(2, "Veuillez sélectionner un indicatif"),
-    phone_number: z.string().min(8, "Numéro de téléphone invalide"),
+    phone_number: z.string().min(6, "Numéro de téléphone invalide"),
     password: z
       .string()
       .min(8, "Le mot de passe doit contenir au moins 8 caractères")
@@ -47,6 +54,18 @@ const registerSchema = z
   .refine((data) => data.password === data.confirm_password, {
     message: "Les mots de passe ne correspondent pas",
     path: ["confirm_password"],
+  })
+  .superRefine((data, ctx) => {
+    const raw = String(data.phone_number || "");
+    const digits = raw.replace(/\D/g, "");
+    const rule = PHONE_RULES[data.phone_country_code] || { min: 6, max: 15 };
+    if (digits.length < rule.min || digits.length > rule.max) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Numéro invalide pour ${data.phone_country_code} (${rule.min}-${rule.max} chiffres)`,
+        path: ["phone_number"],
+      });
+    }
   });
 
 export function RegisterForm({ className, ...props }) {
@@ -61,16 +80,28 @@ export function RegisterForm({ className, ...props }) {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [phoneCode, setPhoneCode] = useState("+33");
+
+  // Assure que l'indicatif est bien enregistré avec une valeur par défaut
+  useEffect(() => {
+    setValue("phone_country_code", phoneCode, { shouldValidate: true });
+  }, [phoneCode, setValue]);
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      // Sanitize numéro: chiffres uniquement et retirer le 0 de tête si FR/UK
+      const digitsOnly = String(data.phone_number || "").replace(/\D/g, "");
+      const trimmed = ["+33", "+44"].includes(data.phone_country_code) && digitsOnly.startsWith("0")
+        ? digitsOnly.slice(1)
+        : digitsOnly;
+
       const userData = {
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,
         phone_country_code: data.phone_country_code,
-        phone_number: data.phone_number,
+        phone_number: trimmed,
         password: data.password,
       };
 
@@ -201,9 +232,9 @@ export function RegisterForm({ className, ...props }) {
                     </motion.div>}
                   </AnimatePresence>
                 </div>
-                <Select onValueChange={(val) => setValue("phone_country_code", val)}>
+                <Select value={phoneCode} onValueChange={(val) => setPhoneCode(val)}>
                   <SelectTrigger className="h-9">
-                    <SelectValue placeholder="🇫🇷 +33" defaultValue="+33" />
+                    <SelectValue placeholder="Sélectionner" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="+33">🇫🇷 +33</SelectItem>
@@ -211,6 +242,8 @@ export function RegisterForm({ className, ...props }) {
                     <SelectItem value="+44">🇬🇧 +44</SelectItem>
                   </SelectContent>
                 </Select>
+                {/* Champ caché pour intégrer à react-hook-form */}
+                <input type="hidden" {...register("phone_country_code")} value={phoneCode} readOnly />
               </div>
 
               <div className="grid col-span-5 gap-2">
@@ -222,8 +255,20 @@ export function RegisterForm({ className, ...props }) {
                     </motion.div>}
                   </AnimatePresence>
                 </div>
-                <Input id="phone_number" {...register("phone_number")} />
-              </div>
+                <Input
+                  id="phone_number"
+                  placeholder={PHONE_RULES[phoneCode]?.example || "ex: numéro"}
+                  {...register("phone_number")}
+                  onChange={(e) => {
+                    // Autoriser seulement les chiffres à l'entrée
+                    const digits = e.target.value.replace(/\D/g, "");
+                    // Limiter selon l'indicatif sélectionné
+                    const rule = PHONE_RULES[phoneCode];
+                    const limited = rule ? digits.slice(0, rule.max) : digits.slice(0, 15);
+                    e.target.value = limited;
+                  }}
+                />
+                </div>
             </div>
 
             {/* Password */}

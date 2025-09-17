@@ -1,0 +1,10 @@
+[flake8]
+max-line-length = 100
+extend-ignore = E203,W503
+exclude =
+    back/auth_service/api/migrations,
+    back/auth_service/venv,
+    back/auth_service/node_modules,
+    node_modules,
+    venv,
+    __pycache__

@@ -1,0 +1,13 @@
+{% extends "email/base.html" %}
+{% block content %}
+  <h1 style="margin:0 0 8px 0;font-size:20px;">Bienvenue {{ first_name }} 👋</h1>
+  <p style="margin:0 0 16px 0; line-height:1.5;">
+    Merci d'avoir rejoint {{ brand_name }}. Pour activer votre compte, veuillez confirmer votre adresse e‑mail.
+  </p>
+  <p style="margin:0 0 24px 0;">
+    <a class="btn" href="{{ verification_link }}" target="_blank" rel="noopener">Vérifier mon e‑mail</a>
+  </p>
+  <p class="muted" style="margin:0 0 8px 0;">Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur:</p>
+  <p class="muted" style="word-break:break-all;">{{ verification_link }}</p>
+{% endblock %}
+

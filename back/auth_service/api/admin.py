@@ -1,7 +1,22 @@
-"""  Admin panel configuration for the User and Address models """
+"""  Admin panel configuration for core models """
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Address
+from .models import (
+    User,
+    Address,
+    Athlete,
+    CompanyProfile,
+    SportCategory,
+    MediaAsset,
+    AthleteImage,
+    SocialStat,
+    AthleteFollow,
+    ActivityEvent,
+    Conversation,
+    ConversationParticipant,
+    Message,
+)
 
 
 @admin.register(User)
@@ -150,3 +165,97 @@ class AddressAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(Athlete)
+class AthleteAdmin(admin.ModelAdmin):
+    """Admin configuration for athlete profiles."""
+
+    list_display = ("name", "location", "category", "price", "certified", "level", "user")
+    search_fields = ("name", "location", "category", "user__email")
+    list_filter = ("certified", "level")
+    ordering = ("name",)
+
+
+@admin.register(CompanyProfile)
+class CompanyProfileAdmin(admin.ModelAdmin):
+    """Admin configuration for company profiles."""
+
+    list_display = ("name", "slug", "verified", "website")
+    search_fields = ("name", "slug")
+    list_filter = ("verified",)
+
+
+@admin.register(SportCategory)
+class SportCategoryAdmin(admin.ModelAdmin):
+    """Admin configuration for sport category records."""
+
+    list_display = ("name", "slug", "emoji")
+    search_fields = ("name", "slug")
+
+
+@admin.register(MediaAsset)
+class MediaAssetAdmin(admin.ModelAdmin):
+    """Admin configuration for media asset objects."""
+
+    list_display = ("url", "created_at")
+    search_fields = ("url",)
+
+
+@admin.register(AthleteImage)
+class AthleteImageAdmin(admin.ModelAdmin):
+    """Admin configuration for athlete-media relations."""
+
+    list_display = ("athlete", "media", "order")
+    list_editable = ("order",)
+    search_fields = ("athlete__name",)
+
+
+@admin.register(SocialStat)
+class SocialStatAdmin(admin.ModelAdmin):
+    """Admin configuration for social statistics."""
+
+    list_display = ("athlete", "platform", "followers", "last_updated")
+    list_filter = ("platform",)
+    search_fields = ("athlete__name",)
+
+
+@admin.register(AthleteFollow)
+class AthleteFollowAdmin(admin.ModelAdmin):
+    """Admin configuration for follow relationships."""
+
+    list_display = ("user", "athlete", "created_at")
+    search_fields = ("user__email", "athlete__name")
+
+
+@admin.register(ActivityEvent)
+class ActivityEventAdmin(admin.ModelAdmin):
+    """Admin configuration for activity feed entries."""
+
+    list_display = ("athlete", "type", "happened_at")
+    list_filter = ("type",)
+    search_fields = ("athlete__name", "text")
+
+
+@admin.register(Conversation)
+class ConversationAdmin(admin.ModelAdmin):
+    """Admin configuration for conversations."""
+
+    list_display = ("id", "topic", "created_at", "updated_at")
+    search_fields = ("topic", "id")
+
+
+@admin.register(ConversationParticipant)
+class ConversationParticipantAdmin(admin.ModelAdmin):
+    """Admin configuration for conversation participants."""
+
+    list_display = ("conversation", "user", "unread_count", "is_muted")
+    search_fields = ("conversation__id", "user__email")
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    """Admin configuration for conversation messages."""
+
+    list_display = ("conversation", "sender", "created_at")
+    search_fields = ("conversation__id", "sender__email", "text")

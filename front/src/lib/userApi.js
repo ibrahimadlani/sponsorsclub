@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8001";
+import { API_BASE_URL, refreshAccessToken as refreshAccessTokenImported } from "./api";
 
 /**
  * Helper function to perform fetch avec authentification.
@@ -19,7 +19,7 @@ async function fetchWithAuth(url, options = {}) {
 
   let res = await fetch(url, options);
   if (res.status === 401) {
-    token = await refreshAccessToken();
+    token = await refreshAccessTokenImported();
     options.headers["Authorization"] = `Bearer ${token}`;
     res = await fetch(url, options);
   }
@@ -46,7 +46,14 @@ export async function login(email, password) {
   }
 
   if (!res.ok) {
-    const error = new Error(data.message || "Login failed");
+    // Traduction FR des erreurs courantes (401 identifiants invalides)
+    let msg = "Une erreur est survenue.";
+    if (res.status === 401) {
+      msg = "Identifiants invalides.";
+    } else {
+      msg = data.error || data.message || data.detail || msg;
+    }
+    const error = new Error(msg);
     error.status = res.status;
     throw error;
   }
@@ -57,24 +64,8 @@ export async function login(email, password) {
 }
 
 // 🔹 Refresh Access Token : utilise le refreshToken pour obtenir un nouveau accessToken.
-export async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) throw new Error("No refresh token available");
-
-  const res = await fetch(`${API_BASE_URL}/api/auth/refresh/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh: refreshToken }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Token refresh failed");
-  }
-
-  const data = await res.json();
-  localStorage.setItem("accessToken", data.access);
-  return data.access;
-}
+// Re-export the shared refresh implementation for consumers of this module
+export const refreshAccessToken = refreshAccessTokenImported;
 
 // 🔹 Logout : supprime les tokens et redirige vers la page de login.
 export function logout() {
@@ -105,6 +96,25 @@ export async function fetchUserProfile() {
   });
 
   if (!res.ok) throw new Error("Failed to fetch user profile");
+  return res.json();
+}
+
+// 🔹 Update preferences (language, currency, timezone) for current user
+export async function updatePreferences({ language, currency, timezone }) {
+  const body = {};
+  if (language !== undefined) body.language = language;
+  if (currency !== undefined) body.currency = currency;
+  if (timezone !== undefined) body.timezone = timezone;
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/auth/preferences/`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const err = new Error(data.error || data.detail || "Failed to update preferences");
+    err.status = res.status;
+    throw err;
+  }
   return res.json();
 }
 
@@ -187,4 +197,48 @@ export async function deleteUser(userId) {
   });
   if (!res.ok) throw new Error(`Failed to delete user ${userId}`);
   return res.json();
+}
+
+// ---------- Follows (athletes) ----------
+
+export async function listFollows() {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/follows/`, { method: "GET" });
+  if (!res.ok) throw new Error("Failed to list follows");
+  return res.json();
+}
+
+export async function followAthlete(athleteId) {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/follows/`, {
+    method: "POST",
+    body: JSON.stringify({ athlete: athleteId }),
+  });
+  if (!res.ok) throw new Error("Failed to follow athlete");
+  return res.json();
+}
+
+export async function unfollow(followId) {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/follows/${followId}/`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to unfollow athlete");
+  return true;
+}
+
+// 🔹 Followed athletes (hydrated Athlete objects)
+export async function getFollowedAthletes() {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/followed/athletes/`, { method: "GET" });
+  if (!res.ok) throw new Error("Failed to fetch followed athletes");
+  const data = await res.json();
+  return Array.isArray(data) ? data : (data.results || []);
+}
+
+// 🔹 Unfollow by athlete UUID (no need to know follow id)
+export async function unfollowByAthlete(athleteId) {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/follows/by-athlete/${athleteId}/`, {
+    method: "DELETE",
+  });
+  if (!res.ok && res.status !== 200 && res.status !== 204) {
+    throw new Error("Failed to unfollow by athlete");
+  }
+  return true;
 }
