@@ -77,7 +77,7 @@ export function NavUser({ user }) {
   return (
     <SidebarMenu className="flex justify-end flex-row items-center gap-3 d-none">
       {/* Call to Action link */}
-      {!user && (
+      
         <a
           href="/sponsor"
           className="ml-3 text-sm hover:no-underline transition-colors"
@@ -87,15 +87,15 @@ export function NavUser({ user }) {
             Devenir un <span className="font-semibold text-pink-600 ms-1">Sponsor</span>
           </div>
         </a>
-      )}
-      {!user && (
+      
+      
         <div 
-          className="rounded-full hover:bg-muted/70 dark:hover:bg-muted/90 transition-colors h-10 w-10 flex justify-center items-center cursor-pointer"
+          className="rounded-full hover:bg-muted/70 dark:hover:bg-muted/90 transition-colors h-10 w-10 hidden lg:flex justify-center items-center cursor-pointer"
           onClick={() => setIsLanguageCurrencyModalOpen(true)}
         >
           <Globe className="h-4 w-4" />
         </div>
-      )}
+      
       
       <SidebarMenuItem className="relative">
         <DropdownMenu>
@@ -109,8 +109,9 @@ export function NavUser({ user }) {
                 <div className="rounded-full h-7 w-7 flex items-center justify-center text-muted-foreground">
                   <AlignJustify className="h-4 w-4" />
                 </div>
-                <Avatar className="rounded-full h-7 w-7 ring-1 ring-black/10 dark:ring-white/10">
-                  {user ? (
+                {user ? (
+                <Avatar className="rounded-full h-6 w-6 ring-1 ring-black/10 dark:ring-white/10 hidden lg:block">
+                  
                     <>
                       <AvatarImage src={user.avatar} alt={user.name} />
                       <AvatarFallback className="rounded-full text-xs flex items-center justify-center bg-black/10 dark:bg-white/10 text-foreground">
@@ -118,10 +119,11 @@ export function NavUser({ user }) {
                         {user.last_name?.charAt(0) || ""}
                       </AvatarFallback>
                     </>
-                  ) : (
-                    <AvatarFallback className="rounded-full bg-transparent" />
-                  )}
+                  
                 </Avatar>
+                ) : (
+                    <></>
+                )}
               </div>
             </SidebarMenuButton>
             
@@ -166,10 +168,10 @@ export function NavUser({ user }) {
                     </span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="hidden md:block"/>
 
                 {/* Navigation Options */}
-                <DropdownMenuGroup>
+                <DropdownMenuGroup className="hidden md:block">
                   <Link href="/" passHref className="font-semibold">
                     <DropdownMenuItem>
                       <Search className="mr-2 h-4 w-4" />
